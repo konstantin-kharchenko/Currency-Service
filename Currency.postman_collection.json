@@ -1,0 +1,230 @@
+{
+	"info": {
+		"_postman_id": "6cd3b4a3-c135-4c5d-9971-c133ff395d43",
+		"name": "Currency",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23262074"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"kostya\",\r\n    \"password\":\"BPpb23-=\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{domain}}/auth/",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"auth",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find All",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "{{access}}",
+						"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc2MzA3MTUwLCJleHAiOjE2NzYzMTA3NTAsInJvbGVzIjpbXX0.u2XeJ89cM6PuismKuihxs49DMXhKFWINCgD-Wqaq8EqRaDGSA2fNXS2fJ44kGoj_Alzm4dMcm1x1eXn5npzzpg",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{domain}}/processing/find-all",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"processing",
+						"find-all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Currency",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/currency/rate/USD",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"currency",
+						"rate",
+						"USD"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create USD Account",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "{{access}}",
+						"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc2MzE2MzU4LCJleHAiOjE2NzYzMTk5NTgsInJvbGVzIjpbXX0.ADLOhpr2WC3qDwnexvLLR4oxzcfLR6xg2D27eQniDip30MS1I1o_oCzUTEbZK1CrUs_0SUlRPnfk7dQztsnj8g",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"currency\":\"USD\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{domain}}/processing/create",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"processing",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create EUR Account",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "{{access}}",
+						"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc2MzE2MzU4LCJleHAiOjE2NzYzMTk5NTgsInJvbGVzIjpbXX0.ADLOhpr2WC3qDwnexvLLR4oxzcfLR6xg2D27eQniDip30MS1I1o_oCzUTEbZK1CrUs_0SUlRPnfk7dQztsnj8g",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"currency\":\"EUR\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{domain}}/processing/create",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"processing",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Transfer mount",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "{{access}}",
+						"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc2MzE2MzU4LCJleHAiOjE2NzYzMTk5NTgsInJvbGVzIjpbXX0.ADLOhpr2WC3qDwnexvLLR4oxzcfLR6xg2D27eQniDip30MS1I1o_oCzUTEbZK1CrUs_0SUlRPnfk7dQztsnj8g",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"fromAccount\":\"a5464092-4e4d-4765-966b-583652152728\",\r\n    \"toAccount\":\"e69f1a43-b6f3-40c7-bc6e-cbc3f20ae571\",\r\n    \"count\":\"1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{domain}}/processing/transfer",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"processing",
+						"transfer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "{{access}}",
+						"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc2MzE2MzU4LCJleHAiOjE2NzYzMTk5NTgsInJvbGVzIjpbXX0.ADLOhpr2WC3qDwnexvLLR4oxzcfLR6xg2D27eQniDip30MS1I1o_oCzUTEbZK1CrUs_0SUlRPnfk7dQztsnj8g",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{domain}}/processing/do",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"processing",
+						"do"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"dima\",\r\n    \"password\":\"BPpb23-=\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{domain}}/registration/",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"registration",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

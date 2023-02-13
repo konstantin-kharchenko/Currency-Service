@@ -1,0 +1,36 @@
+server:
+  port: 8091
+
+
+spring:
+  application:
+    name: processing-service
+  eureka:
+    client:
+      defaultZone: http://localhost:8761/eureka
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/CurrencyDB
+    username: root
+    password: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+  liquibase:
+    change-log: db/changelog/db-changelog-master.xml
+  kafka:
+    producer:
+      bootstrap-servers: kafka:19092
+      key-serializer: org.apache.kafka.common.serialization.LongSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+auth-service:
+  check:
+    uri: http://localhost:9000/auth/check
+
+currency-service:
+  uri: http://localhost:8080/currency/rate/
+

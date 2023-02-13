@@ -1,0 +1,41 @@
+server:
+  port: 8090
+
+
+spring:
+  application:
+    name: registration-service
+  eureka:
+    client:
+      defaultZone: http://localhost:8761/eureka
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/CurrencyDB
+    username: root
+    password: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+
+github:
+  client-id: 92ac19900c1eca5dbd0b
+  client-secret: 92b4068b9356b969acb77654474c9604b5235e8e
+
+facebook:
+  client-id: 1272663283651827
+  client-secret: 8cbfb6671818eb5f12ebaf4237f05f42
+
+google:
+  client-id: 1087210746448-6m0elamf3f4ln4gts08pfdft5b51jktm.apps.googleusercontent.com
+  client-secret: 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
+
+front:
+  redirect-uri:
+
+
+
+

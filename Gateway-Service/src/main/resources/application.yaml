@@ -1,0 +1,43 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway-service
+
+  cloud:
+    gateway:
+      routes:
+        - id: currency-converter
+          uri: lb://currency-converter
+          predicates:
+            - Path=/currency/**
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth/**
+        - id: processing-service
+          uri: lb://processing-service
+          predicates:
+            - Path=/processing/**
+        - id: registration-service
+          uri: lb://registration-service
+          predicates:
+            - Path=/registration/**
+        - id: history-service
+          uri: lb://history-service
+          predicates:
+            - Path=/history/**
+
+
+
+
+eureka:
+  client:
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_ADDRESS}
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG

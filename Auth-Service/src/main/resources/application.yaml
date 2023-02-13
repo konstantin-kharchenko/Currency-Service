@@ -1,0 +1,63 @@
+server:
+  port: 9001
+
+spring:
+  application:
+    name: auth-service
+  eureka:
+    client:
+      service-url:
+        defaultZone: http://localhost:8761/eureka
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/CurrencyDB
+    username: root
+    password: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+  liquibase:
+    change-log: db/changelog/db-changelog-master.xml
+
+jwt:
+  token:
+    access:
+      secret-key: Konstantin
+    refresh:
+      secret-key: Kharchenko
+
+lifetime:
+  access:
+    token: 60
+  refresh:
+    token: 90
+
+github:
+  client-id: 92ac19900c1eca5dbd0b
+  client-secret: 92b4068b9356b969acb77654474c9604b5235e8e
+  register:
+    uri: http://localhost:8083/registration/github
+
+facebook:
+  client-id: 1272663283651827
+  client-secret: 8cbfb6671818eb5f12ebaf4237f05f42
+  register:
+    uri: http://localhost:8083/registration/facebook
+
+google:
+  client-id: 1087210746448-6m0elamf3f4ln4gts08pfdft5b51jktm.apps.googleusercontent.com
+  client-secret: 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
+
+code:
+  client-id: hugbuictmyg5g74t7i4mm4if4m9t7g4d4dmd4ruidsykkjtg
+  client-secret: hi8yghfm8th485htm48yhf4ym89htd4futhmy5ub5ui6b5u6ftmb5ui6fbm5iu
+
+front:
+  redirect-uri:
+
+
+

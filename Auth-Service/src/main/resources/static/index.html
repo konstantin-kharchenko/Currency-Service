@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>Demo</title>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width"/>
+    <base href="/"/>
+    <link rel="stylesheet" type="text/css"
+          href="/webjars/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript"
+            src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+<h1>Login</h1>
+<div>
+    With GitHub: <a href="/auth/to-github">click here</a>
+</div>
+<div>
+    With FaceBook: <a href="/auth/to-facebook">click here</a>
+</div>
+<div>
+    LOGOUT: <a href="/log">click here</a>
+</div>
+
+<div>
+    In auth: <a onclick="auth()">click here</a>
+</div>
+<a href="/delete-tokens/51529773">LOGOUT</a>
+<div class="container authenticated" style="display: none">
+    GitHub: Logged in as: <span id="git-user"></span>
+    </br>
+    FaceBook: Logged in as: <span id="facebook-user"></span>
+    <div>
+        <button onClick="logout()" class="btn btn-primary">Logout</button>
+    </div>
+</div>
+<script type="text/javascript"
+        src="/webjars/js-cookie/js.cookie.js"></script>
+<script type="text/javascript">
+    function logout() {
+        $.post("/logout", function () {
+            $("#user").html('');
+            $(".unauthenticated").show();
+            $(".authenticated").hide();
+        })
+        return true;
+    }
+
+    function auth() {
+        const access = localStorage.getItem("access-token")
+        fetch('http://localhost:8080/auth',
+            {
+                headers: new Headers({
+                    "access-token": access
+                })
+            })
+            .then(res => {
+                try {
+                    if (res.redirected) {
+                        document.location = res.url;
+                    } else {
+                        console.log(res.status)
+                    }
+                } catch (error) {
+                    console.log(error.status)
+                }
+
+            }).catch(error => {
+            console.log(error.status)
+        })
+    }
+
+
+    function code() {
+        var params = window
+            .location
+            .search
+            .replace('?', '')
+            .split('&')
+            .reduce(
+                function (p, e) {
+                    var a = e.split('=');
+                    p[decodeURIComponent(a[0])] = decodeURIComponent(a[1]);
+                    return p;
+                },
+                {}
+            );
+        let code = params['code']
+        console.log(code)
+        if (code !== undefined) {
+            fetch('http://localhost:9000/auth/code?code=' + code + '&client_id=hugbuictmyg5g74t7i4mm4if4m9t7g4d4dmd4ruidsykkjtg&client_secret=hi8yghfm8th485htm48yhf4ym89htd4futhmy5ub5ui6b5u6ftmb5ui6fbm5iu')
+                .then(response => response.json())
+                .then(json => {
+                    console.log(json['accessToken'])
+                    localStorage.setItem('access-token', json['accessToken'])
+                })
+                .catch(error => console.log(error))
+        }
+    }
+
+    code()
+
+</script>
+</body>
+</html>
