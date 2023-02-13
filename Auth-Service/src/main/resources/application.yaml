@@ -37,20 +37,20 @@ lifetime:
     token: 90
 
 github:
-  client-id: 92ac19900c1eca5dbd0b
-  client-secret: 92b4068b9356b969acb77654474c9604b5235e8e
+  client-id: github-id
+  client-secret: github-secret
   register:
     uri: http://localhost:8083/registration/github
 
 facebook:
-  client-id: 1272663283651827
-  client-secret: 8cbfb6671818eb5f12ebaf4237f05f42
+  client-id: facebook-id
+  client-secret: facebook-secret
   register:
     uri: http://localhost:8083/registration/facebook
 
 google:
-  client-id: 1087210746448-6m0elamf3f4ln4gts08pfdft5b51jktm.apps.googleusercontent.com
-  client-secret: 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
+  client-id: google-id
+  client-secret: google-secret
 
 code:
   client-id: hugbuictmyg5g74t7i4mm4if4m9t7g4d4dmd4ruidsykkjtg
