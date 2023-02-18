@@ -19,4 +19,4 @@
 + OAuth2.0: GitHub, FaceBook
 + Kafka
 + Kafdrop
-+ Spring Cloud Config Server (config files you cat find in my [![repository](https://github.com/konstantin-kharchenko/config-files)](https://git.io/streak-stats))
++ Spring Cloud Config Server (config files you cat find in my [![repository](https://github.com/konstantin-kharchenko/config-files)])
