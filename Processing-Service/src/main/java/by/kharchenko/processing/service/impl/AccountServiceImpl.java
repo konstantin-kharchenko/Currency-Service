@@ -11,8 +11,12 @@ import by.kharchenko.processing.repository.AccountRepository;
 import by.kharchenko.processing.repository.UserRepository;
 import by.kharchenko.processing.security.JwtAuthentication;
 import by.kharchenko.processing.service.AccountService;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +24,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -31,12 +36,15 @@ public class AccountServiceImpl implements AccountService {
     private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final String currencyUrl;
+    private final Cache<String, BigDecimal> currencyCache;
+    private final List<String> mainCurrencies = new ArrayList<>(List.of("USD", "EUR", "BYN"));
 
     public AccountServiceImpl(AccountRepository accountRepository, UserRepository userRepository, ApplicationEventPublisher eventPublisher, @Value("${currency-service.uri}") String currencyUrl) {
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
         this.eventPublisher = eventPublisher;
         this.currencyUrl = currencyUrl;
+        this.currencyCache = CacheBuilder.newBuilder().build();
     }
 
     @Override
@@ -76,22 +84,15 @@ public class AccountServiceImpl implements AccountService {
         Account fromAccount = accountRepository.findByAccountNumber(transferAccountDto.getFromAccount()).orElseThrow(() -> new Exception("This account number not exists"));
         Account toAccount = accountRepository.findByAccountNumber(transferAccountDto.getToAccount()).orElseThrow(() -> new Exception("This account number not exists"));
 
-        WebClient fromWebClient = WebClient.create(currencyUrl);
-        WebClient toWebClient = WebClient.create(currencyUrl);
+        BigDecimal fromCurrency = currencyCache.getIfPresent(fromAccount.getCurrency());
 
-        BigDecimal fromCurrency = fromWebClient
-                .get()
-                .uri(fromAccount.getCurrency())
-                .retrieve()
-                .bodyToMono(BigDecimal.class)
-                .block();
+        BigDecimal toCurrency = currencyCache.getIfPresent(toAccount.getCurrency());
 
-        BigDecimal toCurrency = toWebClient
-                .get()
-                .uri(toAccount.getCurrency())
-                .retrieve()
-                .bodyToMono(BigDecimal.class)
-                .block();
+        if (fromCurrency == null || toCurrency == null){
+            updateMainCurrencies();
+            fromCurrency = currencyCache.getIfPresent(fromAccount.getCurrency());
+            toCurrency = currencyCache.getIfPresent(toAccount.getCurrency());
+        }
 
         BigDecimal newMoney = transferAccountDto.getCount().multiply(fromCurrency);
         newMoney = newMoney.divide(toCurrency, new MathContext(5));
@@ -132,6 +133,23 @@ public class AccountServiceImpl implements AccountService {
                 .amount(amount)
                 .created(created)
                 .build();
+    }
+
+    @Scheduled(initialDelay = 30000, fixedRate = 86400000)
+    @Async
+    public void updateMainCurrencies(){
+        currencyCache.invalidateAll();
+        for (String currency: mainCurrencies) {
+            WebClient webClient = WebClient.create(currencyUrl);
+            BigDecimal bigDecimalCurrency = webClient
+                    .get()
+                    .uri(currency)
+                    .retrieve()
+                    .bodyToMono(BigDecimal.class)
+                    .block();
+
+            currencyCache.put(currency, bigDecimalCurrency);
+        }
     }
 
 }

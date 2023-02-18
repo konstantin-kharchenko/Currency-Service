@@ -1,11 +1,6 @@
 server:
   port: 0
 spring:
-  application:
-    name: currency-converter
-  eureka:
-    instance:
-      instance-id: ${spring.application.name}:${random.value}
-    client:
-      defaultZone: http://localhost:8761/eureka
+  config:
+    import: optional:configserver:http://localhost:8888
 

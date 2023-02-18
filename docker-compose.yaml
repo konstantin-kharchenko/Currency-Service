@@ -38,6 +38,18 @@ services:
     depends_on:
       - zookeeper
 
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    container_name: kafdrop
+    restart: "no"
+    networks:
+      - network-example
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "kafka:19092"
+    depends_on:
+      - kafka
 
   eureka-service:
     container_name: 'Eureka-Service'
@@ -49,6 +61,20 @@ services:
     environment:
       eureka.instance.hostname: eureka-service
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
+
+  config-service:
+    container_name: 'Config-Service'
+    build: Config-Service/
+    hostname: spring-cloud-config-server
+    networks:
+      - network-example
+    ports:
+      - "8888:8888"
+    environment:
+      eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
+    depends_on:
+      - eureka-service
+
   auth-service:
     container_name: 'Auth-Service'
     build: Auth-Service/
@@ -57,13 +83,14 @@ services:
     ports:
       - "9001:9001"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/CurrencyDB
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
       github.register.uri: http://registration-service:8083/registration/github
       facebook.register.uri: http://registration-service:8083/registration/facebook
+      spring.config.import: optional:configserver:http://spring-cloud-config-server:8888
     depends_on:
       - eureka-service
       - postgres
+      - config-service
     links:
       - postgres
     restart: on-failure
@@ -76,11 +103,13 @@ services:
     ports:
       - "8090:8090"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/CurrencyDB
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
+      spring.config.import: optional:configserver:http://spring-cloud-config-server:8888
     depends_on:
       - eureka-service
       - postgres
+      - config-service
+      - auth-service
     links:
       - postgres
     restart: on-failure
@@ -93,13 +122,15 @@ services:
     ports:
       - "8091:8091"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/CurrencyDB
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
       auth-service.check.uri: http://auth-service:9001/auth/check
       currency-service.uri: http://api-gateway-service:8080/currency/rate/
+      spring.config.import: optional:configserver:http://spring-cloud-config-server:8888
     depends_on:
       - eureka-service
       - postgres
+      - config-service
+      - auth-service
     restart: on-failure
 
   currency-service1:
@@ -110,14 +141,12 @@ services:
     ports:
       - "8085:8085"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/CurrencyDB
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
+      spring.config.import: optional:configserver:http://spring-cloud-config-server:8888
       server.port: 8085
     depends_on:
       - eureka-service
-      - postgres
-    links:
-      - postgres
+      - config-service
     restart: on-failure
 
   currency-service2:
@@ -128,14 +157,30 @@ services:
     ports:
       - "8086:8086"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/CurrencyDB
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
+      spring.config.import: optional:configserver:http://spring-cloud-config-server:8888
       server.port: 8086
     depends_on:
       - eureka-service
+      - config-service
+    restart: on-failure
+
+  history-service:
+    container_name: 'History-Service'
+    build: History-Service/
+    networks:
+      - network-example
+    ports:
+      - "8092:8092"
+    environment:
+      eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
+      auth-service.check.uri: http://auth-service:9001/auth/check
+      spring.config.import: optional:configserver:http://spring-cloud-config-server:8888
+    depends_on:
+      - eureka-service
       - postgres
-    links:
-      - postgres
+      - config-service
+      - auth-service
     restart: on-failure
 
   gateway-service:
@@ -153,38 +198,10 @@ services:
       - processing-service
       - auth-service
       - history-service
+      - config-service
     environment:
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
     restart: always
-
-  kafdrop:
-    image: obsidiandynamics/kafdrop
-    container_name: kafdrop
-    restart: "no"
-    networks:
-      - network-example
-    ports:
-      - "9000:9000"
-    environment:
-      KAFKA_BROKERCONNECT: "kafka:19092"
-    depends_on:
-      - kafka
-
-  history-service:
-    container_name: 'History-Service'
-    build: History-Service/
-    networks:
-      - network-example
-    ports:
-      - "8092:8092"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/CurrencyDB
-      eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
-      auth-service.check.uri: http://auth-service:9001/auth/check
-    depends_on:
-      - eureka-service
-      - postgres
-    restart: on-failure
 
 networks:
   network-example:

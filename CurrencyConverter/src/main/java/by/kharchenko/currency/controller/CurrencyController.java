@@ -20,7 +20,6 @@ public class CurrencyController {
 
     @GetMapping("/rate/{code}")
     public BigDecimal currencyRate(@PathVariable("code") String code, HttpServletRequest request) {
-        System.out.println("I am " + request.getRequestURL().toString());
         return cbrService.requestMyCurrencyCode(code);
     }
 }
