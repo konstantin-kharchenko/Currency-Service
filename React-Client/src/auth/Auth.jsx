@@ -1,5 +1,6 @@
 import React, {createContext, useContext, useEffect, useState} from 'react';
-import {loginUser} from "../services/authService";
+import {loginUser, registerUser} from "../services/authService";
+import data from "bootstrap/js/src/dom/data";
 
 const AuthContext = createContext({});
 export const useAuth = () => useContext(AuthContext);
@@ -31,13 +32,17 @@ const Auth = ({ children }) => {
         setIsAuth(true);
     }
 
+    const register = async (data) =>{
+        await registerUser(data);
+    }
+
     const logout = () => {
         setIsAuth(false);
         localStorage.clear();
     }
 
     return (
-        <AuthContext.Provider value={{ isAuth,login, logout, loginByOAuth}}>
+        <AuthContext.Provider value={{ isAuth,login, logout, loginByOAuth, register}}>
             {isAuthChecked && children}
         </AuthContext.Provider>
     );

@@ -35,11 +35,29 @@ public abstract class AbstractController {
 
     protected void putRefreshTokenInCookie(String refresh, HttpServletResponse response) {
         Cookie cookie = new Cookie("refresh-token", refresh);
-        cookie.setMaxAge(1800);
+        cookie.setMaxAge(5400);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setSecure(false);
 
+        response.addCookie(cookie);
+    }
+
+    protected void deleteCodeFromCookie(String code, HttpServletResponse response){
+        Cookie cookie = new Cookie(code, null);
+        cookie.setMaxAge(0);
+        cookie.setSecure(false);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+    }
+
+    protected void deleteStateFromCookie(HttpServletResponse response){
+        Cookie cookie = new Cookie("state", null);
+        cookie.setMaxAge(0);
+        cookie.setSecure(false);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
         response.addCookie(cookie);
     }
 }

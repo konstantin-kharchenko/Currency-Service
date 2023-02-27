@@ -26,7 +26,7 @@ const UnAuthHeader = () => {
             </div>
             <div className="col-md-3">
                 <Link to='/login' type="button" className="btn btn-outline-primary me-2">Login</Link>
-                <Link type="button" className="btn btn-primary">Sign-up</Link>
+                <Link to='/registration' type="button" className="btn btn-primary">Sign-up</Link>
             </div>
         </header>
     );

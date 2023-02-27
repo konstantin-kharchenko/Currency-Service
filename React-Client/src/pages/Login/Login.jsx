@@ -99,7 +99,7 @@ const Login = () => {
                     {renderErrorMessage("pass")}
                     <div className="mt-3">
                         <button type="submit" className="btn btn-primary">
-                            Submit
+                            Sign-In
                         </button>
                     </div>
                     <div className="mt-3">

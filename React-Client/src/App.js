@@ -10,6 +10,7 @@ import Auth from "./auth/Auth";
 import UnauthorizedRoutes from "./util/UnauthorizedRoutes";
 import AuthorizedRoutes from "./util/AuthorizedRoutes";
 import ClientHome from "./pages/Client-Home/Client-Home";
+import Registration from "./pages/Registration/Registration";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
                           <Route path="*" element={<Navigate to="/" />} />
                           <Route path="/" element={<Home/>} />
                           <Route path='/login' element={<Login />} />
+                          <Route path='/registration' element={<Registration/>}/>
                       </Routes>
                   </UnauthorizedRoutes>
                   <AuthorizedRoutes>

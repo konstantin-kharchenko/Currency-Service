@@ -39,6 +39,7 @@ public class FaceBookAuthController extends AbstractController {
             , @CookieValue("state") String state) throws IOException, ExecutionException {
         CodeUser codeUser = tokenService.signInFromFaceBook(params, state);
         putCodeInCookie(codeUser, response);
+        deleteStateFromCookie(response);
         response.sendRedirect("http://localhost:3000/login?code=" + codeUser.getCode());
     }
 }

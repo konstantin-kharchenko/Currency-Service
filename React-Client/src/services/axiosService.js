@@ -47,16 +47,6 @@ export const request = async ({
 
             return finalResponse;
         }
-        else
-        {
-            if (error.response.status === 302){
-                console.log("DOOOO")
-                document.location = error.response.url;
-                return;
-            }
-
-        }
-        console.log(error)
         throw error;
     }
 };

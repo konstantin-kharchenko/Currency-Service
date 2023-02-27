@@ -40,6 +40,7 @@ public class GitHubAuthController extends AbstractController {
             , @CookieValue("state") String state) throws IOException, ExecutionException {
         CodeUser codeUser = tokenService.signInFromGitHub(params, state);
         putCodeInCookie(codeUser, response);
+        deleteStateFromCookie(response);
         response.sendRedirect("http://localhost:3000/login?code=" + codeUser.getCode());
     }
 

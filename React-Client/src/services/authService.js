@@ -9,3 +9,7 @@ export const loginUserByGitHub = async () =>{
     const res = await request({headers:{"Access-Control-Allow-Origin": "*"}, url: '/auth/to-github'});
     console.log(res.url)
 }
+
+export const registerUser = async ({ username, password }) => {
+    await request({ method: 'POST', url: '/registration/', data: { username, password } });
+}
