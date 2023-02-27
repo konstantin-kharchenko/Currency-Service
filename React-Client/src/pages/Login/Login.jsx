@@ -51,7 +51,6 @@ const Login = () => {
                 {}
             );
         let code = params['code']
-        console.log(code);
         if (code !== undefined) {
             fetch('http://localhost:8080/auth/code?code=' + code + '&client_id=' + serverData.client_id + '&client_secret=' + serverData.client_secret
             , {
