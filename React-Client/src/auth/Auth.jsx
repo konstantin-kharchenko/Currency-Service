@@ -12,7 +12,10 @@ const Auth = ({ children }) => {
     useEffect(() => {
         (async () => {
             if (localStorage.getItem('access-token')) {
-                setIsAuth(true);
+                setIsAuth(true)
+            }
+            else {
+                setIsAuth(false);
             }
             setIsAuthChecked(true);
         })();
@@ -24,8 +27,17 @@ const Auth = ({ children }) => {
         setIsAuth(true);
     };
 
+    const loginByOAuth = () =>{
+        setIsAuth(true);
+    }
+
+    const logout = () => {
+        setIsAuth(false);
+        localStorage.clear();
+    }
+
     return (
-        <AuthContext.Provider value={{ isAuth,login, setIsAuth}}>
+        <AuthContext.Provider value={{ isAuth,login, logout, loginByOAuth}}>
             {isAuthChecked && children}
         </AuthContext.Provider>
     );

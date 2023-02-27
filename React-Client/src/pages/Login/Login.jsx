@@ -1,9 +1,9 @@
-import CustomHeader from "../../components/CustomHeader";
 import React, {useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../auth/Auth";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Login.module.css';
+import UnAuthHeader from "../../components/Header/UnAuthHeader";
 
 const Login = () => {
 
@@ -14,7 +14,7 @@ const Login = () => {
 
     const navigate = useNavigate();
     const {login} = useAuth();
-    const {setIsAuth} = useAuth();
+    const {loginByOAuth} = useAuth();
     const [errorMessages, setErrorMessages] = useState({});
 
     const errors = {
@@ -59,8 +59,8 @@ const Login = () => {
                 .then(response => response.json())
                 .then(json => {
                     localStorage.setItem('access-token', JSON.stringify({accessToken: json.accessToken}));
-                    document.location = 'http://localhost:3000'
-                    setIsAuth(true);
+                    loginByOAuth();
+                    document.location = 'http://localhost:3000/'
                 })
                 .catch(error => console.log(error))
         }
@@ -74,7 +74,7 @@ const Login = () => {
 
     return (
         <div>
-            <CustomHeader/>
+            <UnAuthHeader/>
             <div className='container text-center flex-column'>
                 <form onSubmit={handleSubmit}>
                     <div>

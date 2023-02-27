@@ -1,10 +1,10 @@
 import React from 'react';
-import CustomHeader from "../components/CustomHeader";
+import UnAuthHeader from "../../components/Header/UnAuthHeader";
 
 const Home = () => {
     return (
         <div>
-            <CustomHeader />
+            <UnAuthHeader />
         </div>
     );
 };
