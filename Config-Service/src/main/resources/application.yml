@@ -11,8 +11,6 @@ spring:
           uri: https://github.com/konstantin-kharchenko/config-files.git
           default-label: master
           skipSslValidation: true
-          username: konstantin-kharchenko
-          password: bppb23-=
   eureka:
     client:
       service-url:

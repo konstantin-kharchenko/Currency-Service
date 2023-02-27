@@ -85,15 +85,12 @@ services:
       - "9001:9001"
     environment:
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
-      github.register.uri: http://registration-service:8090/registration/github
-      facebook.register.uri: http://registration-service:8090/registration/facebook
     depends_on:
       - eureka-service
       - postgres
       - config-service
     links:
       - postgres
-    command: sh -c './wait-for host:8761 -- cmd ./wait-for host:8888 -- cmd ./wait-for host:5432 -- cmd'
     restart: on-failure
 
   registration-service:
@@ -112,7 +109,6 @@ services:
       - auth-service
     links:
       - postgres
-    command: sh -c './wait-for host:8761 -- cmd ./wait-for host:8888 -- cmd ./wait-for host:9001 -- cmd ./wait-for host:5432 -- cmd'
     restart: on-failure
 
   processing-service:
@@ -124,14 +120,11 @@ services:
       - "8091:8091"
     environment:
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
-      auth-service.check.uri: http://auth-service:9001/auth/check
-      currency-service.uri: http://api-gateway-service:8080/currency/rate/
     depends_on:
       - eureka-service
       - postgres
       - config-service
       - auth-service
-    command: sh -c './wait-for host:8761 -- cmd ./wait-for host:8888 -- cmd ./wait-for host:9001 -- cmd ./wait-for host:5432 -- cmd'
     restart: on-failure
 
   currency-service1:
@@ -147,7 +140,6 @@ services:
     depends_on:
       - eureka-service
       - config-service
-    command: sh -c './wait-for host:8761 -- cmd ./wait-for host:8888 -- cmd'
     restart: on-failure
 
 
@@ -164,7 +156,6 @@ services:
     depends_on:
       - eureka-service
       - config-service
-    command: sh -c './wait-for host:8761 -- cmd ./wait-for host:8888 -- cmd'
     restart: on-failure
 
 
@@ -177,13 +168,11 @@ services:
       - "8092:8092"
     environment:
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
-      auth-service.check.uri: http://auth-service:9001/auth/check
     depends_on:
       - eureka-service
       - postgres
       - config-service
       - auth-service
-    command: sh -c './wait-for host:8761 -- cmd ./wait-for host:8888 -- cmd ./wait-for host:9001 -- cmd ./wait-for host:5432 -- cmd'
     restart: on-failure
 
   gateway-service:
@@ -202,7 +191,6 @@ services:
       - auth-service
       - history-service
       - config-service
-    command: sh -c './wait-for host:8761 -- cmd ./wait-for host:8888 -- cmd ./wait-for host:9001 -- cmd ./wait-for host:5432 -- cmd ./wait-for host:8085 -- cmd ./wait-for host:8086 -- cmd ./wait-for host:8092 -- cmd ./wait-for host:8091 -- cmd ./wait-for host:8090 -- cmd'
     environment:
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
     restart: always
