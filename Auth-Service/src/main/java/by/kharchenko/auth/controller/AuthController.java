@@ -21,8 +21,13 @@ public class AuthController extends AbstractController {
     private final TokenServiceImpl tokenService;
 
     @PostMapping("/")
-    public ResponseEntity<AccessTokenDto> auth(@RequestBody AuthUserDto user, HttpServletResponse response) throws Exception {
-        Tokens tokens = tokenService.signIn(user);
+    public ResponseEntity auth(@RequestBody AuthUserDto user, HttpServletResponse response) {
+        Tokens tokens = null;
+        try {
+            tokens = tokenService.signIn(user);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         putRefreshTokenInCookie(tokens.getRefreshToken(), response);
         return ResponseEntity.ok(new AccessTokenDto(tokens.getAccessToken()));
     }

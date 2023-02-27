@@ -1,8 +1,6 @@
 package by.kharchenko.currency.controller;
 
 import by.kharchenko.currency.service.CbrService;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +17,8 @@ public class CurrencyController {
     private final CbrService cbrService;
 
     @GetMapping("/rate/{code}")
-    public BigDecimal currencyRate(@PathVariable("code") String code, HttpServletRequest request) {
-        return cbrService.requestMyCurrencyCode(code);
+    public double currencyRate(@PathVariable("code") String code) {
+        double currency = cbrService.requestMyCurrencyCode(code);
+        return currency;
     }
 }

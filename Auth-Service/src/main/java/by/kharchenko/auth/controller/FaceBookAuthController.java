@@ -25,11 +25,12 @@ public class FaceBookAuthController extends AbstractController {
     public void redirectToFaceBook(HttpServletResponse response, @Value("${facebook.client-id}") String clientId) throws IOException {
         String state = UUID.randomUUID().toString();
         putStateInCookie(state, response);
-        response.sendRedirect("https://www.facebook.com/v15.0/dialog/oauth?client_id="
+        String redirectUrl = "https://www.facebook.com/v15.0/dialog/oauth?client_id="
                 + clientId
                 + "&state="
                 + state
-                + "&redirect_uri=http://localhost:9000/auth/from-facebook");
+                + "&redirect_uri=http://localhost:8080/auth/from-facebook";
+        response.sendRedirect(redirectUrl);
     }
 
     @GetMapping("/from-facebook")
@@ -38,6 +39,6 @@ public class FaceBookAuthController extends AbstractController {
             , @CookieValue("state") String state) throws IOException, ExecutionException {
         CodeUser codeUser = tokenService.signInFromFaceBook(params, state);
         putCodeInCookie(codeUser, response);
-        response.sendRedirect("http://localhost:9000?code=" + codeUser.getCode());
+        response.sendRedirect("http://localhost:3000/login?code=" + codeUser.getCode());
     }
 }

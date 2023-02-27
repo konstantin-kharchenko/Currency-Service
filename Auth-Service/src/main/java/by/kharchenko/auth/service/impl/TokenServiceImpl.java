@@ -15,7 +15,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import io.jsonwebtoken.Claims;
 import org.springframework.http.*;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -63,7 +62,7 @@ public class TokenServiceImpl implements TokenService {
                 throw new Exception("invalid password");
             }
         } else {
-            throw new UsernameNotFoundException("username not found");
+            throw new Exception("username not found");
         }
     }
 
@@ -133,6 +132,7 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public CodeUser signInFromGitHub(Map<String, String> params, String state) throws ExecutionException {
         String gitState = params.get("state");
+        System.out.println("gitState: " + gitState);
         if (gitState.equals(state)) {
             RestTemplate restTemplate = new RestTemplate();
             String accessTokenUrl = "https://github.com/login/oauth/access_token";
@@ -159,7 +159,7 @@ public class TokenServiceImpl implements TokenService {
             Optional<User> optionalUser = userRepository.findByGitHubId(gitHubUser.getId());
             String code = null;
             if (!optionalUser.isPresent()) {
-
+                System.out.println("register");
                 String registerUrl = oAuthAppInfo.gitHubUri;
                 restTemplate = new RestTemplate();
                 HttpEntity<ResultUserAfterRegisterDto> requestRegister = new HttpEntity(gitHubUser);

@@ -1,3 +1,5 @@
 spring:
   application:
     name: processing-service
+  config:
+    import: optional:configserver:http://spring-cloud-config-server:8888

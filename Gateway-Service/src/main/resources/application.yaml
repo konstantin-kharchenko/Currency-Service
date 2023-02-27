@@ -4,9 +4,18 @@ server:
 spring:
   application:
     name: api-gateway-service
-
+  main:
+    web-application-type: reactive
   cloud:
     gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:3000"
+            allowedHeaders: "*"
+            allowedMethods:
+              - GET
+              - POST
       routes:
         - id: currency-converter
           uri: lb://currency-converter

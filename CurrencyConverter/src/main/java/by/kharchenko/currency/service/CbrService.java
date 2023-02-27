@@ -22,7 +22,7 @@ import static java.util.stream.Collectors.toMap;
 @Service
 public class CbrService {
 
-    private final Cache<LocalDate, Map<String, BigDecimal>> cache;
+    private final Cache<LocalDate, Map<String, Double>> cache;
     private final HttpCurrencyDateRateClient dateRateClient;
 
     public CbrService(HttpCurrencyDateRateClient dateRateClient) {
@@ -30,7 +30,7 @@ public class CbrService {
         this.cache = CacheBuilder.newBuilder().build();
     }
 
-    public BigDecimal requestMyCurrencyCode(String code) {
+    public double requestMyCurrencyCode(String code) {
         try {
             return cache.get(LocalDate.now(), this::callAllByCurrentDate).get(code);
         } catch (ExecutionException e) {
@@ -38,16 +38,16 @@ public class CbrService {
         }
     }
 
-    private Map<String, BigDecimal> callAllByCurrentDate() {
+    private Map<String, Double> callAllByCurrentDate() {
         String xml = dateRateClient.requestByDate(LocalDate.now());
         ValCurs valCurs = unmarshall(xml);
         return valCurs.getValute().stream().collect(toMap(ValCurs.Valute::getCharCode, item -> parseWithLocale(item.getValue())));
     }
 
-    private BigDecimal parseWithLocale(String currency) {
+    private double parseWithLocale(String currency) {
         try {
-            double v = NumberFormat.getNumberInstance(Locale.getDefault()).parse(currency).doubleValue();
-            return BigDecimal.valueOf(v);
+            double v = NumberFormat.getNumberInstance(Locale.FRANCE).parse(currency).doubleValue();
+            return v;
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

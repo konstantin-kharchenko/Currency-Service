@@ -74,6 +74,7 @@ services:
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
     depends_on:
       - eureka-service
+    command: sh -c './wait-for host:8761 -- cmd'
 
   auth-service:
     container_name: 'Auth-Service'
@@ -84,15 +85,15 @@ services:
       - "9001:9001"
     environment:
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
-      github.register.uri: http://registration-service:8083/registration/github
-      facebook.register.uri: http://registration-service:8083/registration/facebook
-      spring.config.import: optional:configserver:http://spring-cloud-config-server:8888
+      github.register.uri: http://registration-service:8090/registration/github
+      facebook.register.uri: http://registration-service:8090/registration/facebook
     depends_on:
       - eureka-service
       - postgres
       - config-service
     links:
       - postgres
+    command: sh -c './wait-for host:8761 -- cmd ./wait-for host:8888 -- cmd ./wait-for host:5432 -- cmd'
     restart: on-failure
 
   registration-service:
@@ -104,7 +105,6 @@ services:
       - "8090:8090"
     environment:
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
-      spring.config.import: optional:configserver:http://spring-cloud-config-server:8888
     depends_on:
       - eureka-service
       - postgres
@@ -112,6 +112,7 @@ services:
       - auth-service
     links:
       - postgres
+    command: sh -c './wait-for host:8761 -- cmd ./wait-for host:8888 -- cmd ./wait-for host:9001 -- cmd ./wait-for host:5432 -- cmd'
     restart: on-failure
 
   processing-service:
@@ -125,12 +126,12 @@ services:
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
       auth-service.check.uri: http://auth-service:9001/auth/check
       currency-service.uri: http://api-gateway-service:8080/currency/rate/
-      spring.config.import: optional:configserver:http://spring-cloud-config-server:8888
     depends_on:
       - eureka-service
       - postgres
       - config-service
       - auth-service
+    command: sh -c './wait-for host:8761 -- cmd ./wait-for host:8888 -- cmd ./wait-for host:9001 -- cmd ./wait-for host:5432 -- cmd'
     restart: on-failure
 
   currency-service1:
@@ -142,12 +143,13 @@ services:
       - "8085:8085"
     environment:
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
-      spring.config.import: optional:configserver:http://spring-cloud-config-server:8888
       server.port: 8085
     depends_on:
       - eureka-service
       - config-service
+    command: sh -c './wait-for host:8761 -- cmd ./wait-for host:8888 -- cmd'
     restart: on-failure
+
 
   currency-service2:
     container_name: 'CurrencyConverter2'
@@ -158,12 +160,13 @@ services:
       - "8086:8086"
     environment:
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
-      spring.config.import: optional:configserver:http://spring-cloud-config-server:8888
       server.port: 8086
     depends_on:
       - eureka-service
       - config-service
+    command: sh -c './wait-for host:8761 -- cmd ./wait-for host:8888 -- cmd'
     restart: on-failure
+
 
   history-service:
     container_name: 'History-Service'
@@ -175,12 +178,12 @@ services:
     environment:
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
       auth-service.check.uri: http://auth-service:9001/auth/check
-      spring.config.import: optional:configserver:http://spring-cloud-config-server:8888
     depends_on:
       - eureka-service
       - postgres
       - config-service
       - auth-service
+    command: sh -c './wait-for host:8761 -- cmd ./wait-for host:8888 -- cmd ./wait-for host:9001 -- cmd ./wait-for host:5432 -- cmd'
     restart: on-failure
 
   gateway-service:
@@ -199,6 +202,7 @@ services:
       - auth-service
       - history-service
       - config-service
+    command: sh -c './wait-for host:8761 -- cmd ./wait-for host:8888 -- cmd ./wait-for host:9001 -- cmd ./wait-for host:5432 -- cmd ./wait-for host:8085 -- cmd ./wait-for host:8086 -- cmd ./wait-for host:8092 -- cmd ./wait-for host:8091 -- cmd ./wait-for host:8090 -- cmd'
     environment:
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
     restart: always

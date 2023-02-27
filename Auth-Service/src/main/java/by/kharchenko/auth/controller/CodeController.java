@@ -4,6 +4,8 @@ import by.kharchenko.auth.dto.AccessTokenDto;
 import by.kharchenko.auth.dto.Tokens;
 import by.kharchenko.auth.service.TokenService;
 import lombok.AllArgsConstructor;
+import org.bouncycastle.mime.Headers;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,7 +34,9 @@ public class CodeController extends AbstractController {
             if (cookie.getName().equals(code)) {
                 Tokens tokens = tokenService.getTokensByCode(Long.parseLong(cookie.getValue()), clientSecret, clientId);
                 putRefreshTokenInCookie(tokens.getRefreshToken(), response);
-                return ResponseEntity.ok(new AccessTokenDto(tokens.getAccessToken()));
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Access-Control-Allow-Credentials", "true");
+                return ResponseEntity.ok().headers(headers).body(new AccessTokenDto(tokens.getAccessToken()));
             }
         }
 
