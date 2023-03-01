@@ -17,7 +17,7 @@ public interface AccountService {
 
     AccountDto findByAccountNumber(String accountNumber) throws Exception;
 
-    void transfer(TransferAccountDto transferAccountDto) throws Exception;
+    AccountDto transfer(TransferAccountDto transferAccountDto) throws Exception;
 
     void delete(Long id);
 

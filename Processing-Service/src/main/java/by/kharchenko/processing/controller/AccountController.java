@@ -35,8 +35,8 @@ public class AccountController {
     }
 
     @PostMapping("/transfer")
-    public void transfer(@RequestBody TransferAccountDto transferAccountDto) throws Exception {
-        accountService.transfer(transferAccountDto);
+    public ResponseEntity<AccountDto> transfer(@RequestBody TransferAccountDto transferAccountDto) throws Exception {
+        return ResponseEntity.ok(accountService.transfer(transferAccountDto));
     }
 
     @GetMapping("/find-all")

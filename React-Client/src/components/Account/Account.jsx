@@ -8,6 +8,7 @@ const Account = (props) => {
     const [topUpCount, setTopUpCount] = useState(0);
     const [exchangeShow, setExchangeShow] = useState(false);
     const [exchangeCount, setExchangeCount] = useState(0);
+    const [exchangeAccountNumber, setExchangeAccountNumber] = useState('');
     const [account, setAccount] = useState(props.account);
     const topUp = async () => {
         console.log(topUpCount);
@@ -29,7 +30,22 @@ const Account = (props) => {
 
 
     const exchange = async () => {
-
+        if (exchangeCount !== 0 && !exchangeCount.includes('-') && exchangeAccountNumber !== '') {
+            const {data} = await request({
+                method: 'POST', url: '/processing/transfer'
+                , data: {
+                    fromAccount: account.accountNumber,
+                    toAccount: exchangeAccountNumber,
+                    count: exchangeCount
+                }
+            });
+            console.log(data);
+            setAccount(data);
+            setExchangeShow(false)
+            setExchangeCount(0);
+            setExchangeAccountNumber('');
+        }
+        setTopUpShow(false)
     }
 
     return (
@@ -94,12 +110,13 @@ const Account = (props) => {
                         topUp={topUp}
                         setTopUpCount={setTopUpCount}
             />
-             <ExchangeModel show={exchangeShow}
+            <ExchangeModel show={exchangeShow}
                            onHide={() => {
                                setExchangeShow(false)
                            }}
-                            exchange={exchange}
-                            setExchangeCount={setExchangeCount}
+                           setExchangeAccountNumber={setExchangeAccountNumber}
+                           exchange={exchange}
+                           setExchangeCount={setExchangeCount}
             />
         </div>
     );

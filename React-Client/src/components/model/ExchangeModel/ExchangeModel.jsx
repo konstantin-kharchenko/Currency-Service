@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
-const ExchangeModel = ({onHide, exchange, show, setExchangeCount}) => {
+const ExchangeModel = ({onHide, exchange, show, setExchangeCount, setExchangeAccountNumber}) => {
     const [errMsg, setErrMsg] = useState('');
 
     const onHideAdd = ()=>{
@@ -20,11 +20,7 @@ const ExchangeModel = ({onHide, exchange, show, setExchangeCount}) => {
     }
 
     const onInputAccountNumber = (event) => {
-        if (event.target.value.includes('-')) {
-            setErrMsg('cannot be negative')
-        } else {
-            setErrMsg('')
-        }
+        setExchangeAccountNumber(event.target.value)
     }
 
     return (
@@ -52,7 +48,7 @@ const ExchangeModel = ({onHide, exchange, show, setExchangeCount}) => {
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button onClick={exchange}>Close</Button>
+                <Button onClick={exchange}>Exchange</Button>
             </Modal.Footer>
         </Modal>
     );

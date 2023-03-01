@@ -107,7 +107,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public void transfer(TransferAccountDto transferAccountDto) throws Exception {
+    public AccountDto transfer(TransferAccountDto transferAccountDto) throws Exception {
         Account fromAccount = accountRepository.findByAccountNumber(transferAccountDto.getFromAccount()).orElseThrow(() -> new Exception("This account number not exists"));
         Account toAccount = accountRepository.findByAccountNumber(transferAccountDto.getToAccount()).orElseThrow(() -> new Exception("This account number not exists"));
 
@@ -127,7 +127,7 @@ public class AccountServiceImpl implements AccountService {
         fromAccount.setMoneyCount(fromAccount.getMoneyCount().subtract(transferAccountDto.getCount()));
         toAccount.setMoneyCount(toAccount.getMoneyCount().add(newMoney));
 
-        accountRepository.save(fromAccount);
+        Account savedAccount = accountRepository.save(fromAccount);
         accountRepository.save(toAccount);
 
         eventPublisher.publishEvent(createEvent(
@@ -138,6 +138,8 @@ public class AccountServiceImpl implements AccountService {
                 , transferAccountDto.getCount()
                 , new Date()
         ));
+
+        return AccountMapper.INSTANCE.accountToAccountDto(savedAccount);
     }
 
     @Override
