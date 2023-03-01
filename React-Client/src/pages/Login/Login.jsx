@@ -4,6 +4,7 @@ import {useAuth} from "../../auth/Auth";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Login.module.css';
 import UnAuthHeader from "../../components/Header/UnAuthHeader";
+import CustomFooter from "../../components/Footer/CustomFooter";
 
 const Login = () => {
 
@@ -116,6 +117,7 @@ const Login = () => {
                 </form>
                 {renderErrorMessage("all")}
             </div>
+            <CustomFooter/>
         </div>
     );
 };

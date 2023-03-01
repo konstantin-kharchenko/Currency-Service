@@ -6,6 +6,8 @@ import by.kharchenko.auth.dto.Tokens;
 import by.kharchenko.auth.dto.JwtAuthenticationDto;
 import by.kharchenko.auth.service.impl.TokenServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

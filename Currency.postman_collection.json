@@ -40,7 +40,7 @@
 				"header": [
 					{
 						"key": "{{access}}",
-						"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc2MzA3MTUwLCJleHAiOjE2NzYzMTA3NTAsInJvbGVzIjpbXX0.u2XeJ89cM6PuismKuihxs49DMXhKFWINCgD-Wqaq8EqRaDGSA2fNXS2fJ44kGoj_Alzm4dMcm1x1eXn5npzzpg",
+						"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc3NjAwNzU3LCJleHAiOjE2Nzc2MDQzNTcsInJvbGVzIjpbeyJpZCI6MSwicm9sZSI6IlJPTEVfVVNFUiJ9XX0.sZmZqaxKYWCECaakZXMentNkLDF_8ERzmYplokEXowpc7nYebkGMX0y6XiHCBiopDJ6qyKZM8lxTP_EfHo3akQ",
 						"type": "text"
 					}
 				],
@@ -63,14 +63,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{domain}}/currency/rate/USD",
+					"raw": "{{domain}}/currency/rate/EUR",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"currency",
 						"rate",
-						"USD"
+						"EUR"
 					]
 				}
 			},
@@ -83,7 +83,7 @@
 				"header": [
 					{
 						"key": "{{access}}",
-						"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc2MzE2MzU4LCJleHAiOjE2NzYzMTk5NTgsInJvbGVzIjpbXX0.ADLOhpr2WC3qDwnexvLLR4oxzcfLR6xg2D27eQniDip30MS1I1o_oCzUTEbZK1CrUs_0SUlRPnfk7dQztsnj8g",
+						"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc3NjYwMjA4LCJleHAiOjE2Nzc2NjM4MDgsInJvbGVzIjpbeyJpZCI6MSwicm9sZSI6IlJPTEVfVVNFUiJ9XX0.kR7cg4g5MT21rKvXLcjtAG4Kk7zC9ggjIYxhZmLVYHSYCY76XWMbE9Sk698Kb-XYuiLCIHEfl1ic3uujH9bWKA",
 						"type": "text"
 					}
 				],
@@ -116,7 +116,7 @@
 				"header": [
 					{
 						"key": "{{access}}",
-						"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc2MzE2MzU4LCJleHAiOjE2NzYzMTk5NTgsInJvbGVzIjpbXX0.ADLOhpr2WC3qDwnexvLLR4oxzcfLR6xg2D27eQniDip30MS1I1o_oCzUTEbZK1CrUs_0SUlRPnfk7dQztsnj8g",
+						"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc3NjYwMjA4LCJleHAiOjE2Nzc2NjM4MDgsInJvbGVzIjpbeyJpZCI6MSwicm9sZSI6IlJPTEVfVVNFUiJ9XX0.kR7cg4g5MT21rKvXLcjtAG4Kk7zC9ggjIYxhZmLVYHSYCY76XWMbE9Sk698Kb-XYuiLCIHEfl1ic3uujH9bWKA",
 						"type": "text"
 					}
 				],
@@ -149,13 +149,13 @@
 				"header": [
 					{
 						"key": "{{access}}",
-						"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc2MzE2MzU4LCJleHAiOjE2NzYzMTk5NTgsInJvbGVzIjpbXX0.ADLOhpr2WC3qDwnexvLLR4oxzcfLR6xg2D27eQniDip30MS1I1o_oCzUTEbZK1CrUs_0SUlRPnfk7dQztsnj8g",
+						"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc2NzQ1MTI4LCJleHAiOjE2NzY3NDg3MjgsInJvbGVzIjpbeyJpZCI6MSwicm9sZSI6IlJPTEVfVVNFUiJ9XX0.JZidNz4Bq6JMXq74ffLpD0jEgXT9wIJSM5cGHSUIYh-wG-CZcrnDjYaRSl9vs-YoNj75Vum_OwpXD2OTASQmlQ",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"fromAccount\":\"a5464092-4e4d-4765-966b-583652152728\",\r\n    \"toAccount\":\"e69f1a43-b6f3-40c7-bc6e-cbc3f20ae571\",\r\n    \"count\":\"1\"\r\n}",
+					"raw": "{\r\n    \"fromAccount\":\"612e7e41-a9a1-4df5-a7cc-727a33493cc3\",\r\n    \"toAccount\":\"ef185742-2d49-4326-bbb0-868ffffa03c8\",\r\n    \"count\":\"1\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -176,31 +176,7 @@
 			"response": []
 		},
 		{
-			"name": "New Request",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "{{access}}",
-						"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc2MzE2MzU4LCJleHAiOjE2NzYzMTk5NTgsInJvbGVzIjpbXX0.ADLOhpr2WC3qDwnexvLLR4oxzcfLR6xg2D27eQniDip30MS1I1o_oCzUTEbZK1CrUs_0SUlRPnfk7dQztsnj8g",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{domain}}/processing/do",
-					"host": [
-						"{{domain}}"
-					],
-					"path": [
-						"processing",
-						"do"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "New Request",
+			"name": "Registration",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -221,6 +197,39 @@
 					"path": [
 						"registration",
 						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Money",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "{{access}}",
+						"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc3NTk5NjM2LCJleHAiOjE2Nzc2MDMyMzYsInJvbGVzIjpbeyJpZCI6MSwicm9sZSI6IlJPTEVfVVNFUiJ9XX0.HxKLUnv3tGEgNHI9xj9_lxx9xZjRr4dove7TV44sT02SaOurQL4XVCG1scUUqHkwbZDV-W0JKHzp_w1nVSLb5g",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"accountNumber\":\"45010a24-ccc9-4310-b927-bd4edced5f14\",\r\n    \"moneyCount\":\"1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{domain}}/processing/add-money",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"processing",
+						"add-money"
 					]
 				}
 			},

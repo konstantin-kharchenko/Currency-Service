@@ -35,9 +35,7 @@ public class CodeController extends AbstractController {
                 Tokens tokens = tokenService.getTokensByCode(Long.parseLong(cookie.getValue()), clientSecret, clientId);
                 putRefreshTokenInCookie(tokens.getRefreshToken(), response);
                 deleteCodeFromCookie(code, response);
-                HttpHeaders headers = new HttpHeaders();
-                headers.add("Access-Control-Allow-Credentials", "true");
-                return ResponseEntity.ok().headers(headers).body(new AccessTokenDto(tokens.getAccessToken()));
+                return ResponseEntity.ok(new AccessTokenDto(tokens.getAccessToken()));
             }
         }
 

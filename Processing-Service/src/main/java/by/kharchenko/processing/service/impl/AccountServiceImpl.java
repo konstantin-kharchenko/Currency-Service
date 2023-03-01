@@ -1,6 +1,7 @@
 package by.kharchenko.processing.service.impl;
 
 import by.kharchenko.processing.dto.AccountDto;
+import by.kharchenko.processing.dto.AddCountDto;
 import by.kharchenko.processing.dto.CreateAccountDto;
 import by.kharchenko.processing.dto.TransferAccountDto;
 import by.kharchenko.processing.entity.Account;
@@ -58,6 +59,32 @@ public class AccountServiceImpl implements AccountService {
         account.setMoneyCount(new BigDecimal(0));
         account.setAccountNumber(UUID.randomUUID().toString());
         accountRepository.save(account);
+    }
+
+    @Override
+    @Transactional
+    public AccountDto addMoneyCount(AddCountDto addCountDto) throws Exception {
+        Account account = accountRepository.findByAccountNumber(addCountDto.getAccountNumber()).orElseThrow(() -> new Exception("This account number not exists"));
+        System.out.println(account);
+        BigDecimal nowCount = account.getMoneyCount();
+        BigDecimal resultCount = nowCount.add(addCountDto.getMoneyCount());
+        System.out.println("Result:" + resultCount);
+        account.setMoneyCount(resultCount);
+
+        Account savedAccount = accountRepository.save(account);
+
+        System.out.println("After Save");
+
+        eventPublisher.publishEvent(createEvent(
+                UUID.randomUUID().toString()
+                , account.getUser().getId()
+                , account.getId()
+                , account.getCurrency()
+                , addCountDto.getMoneyCount()
+                , new Date()
+        ));
+
+        return AccountMapper.INSTANCE.accountToAccountDto(savedAccount);
     }
 
     @Override

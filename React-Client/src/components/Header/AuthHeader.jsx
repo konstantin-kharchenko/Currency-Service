@@ -12,7 +12,6 @@ const AuthHeader = () => {
 
     const beforeLogout = ()=>{
         logout();
-        console.log(isAuth);
     }
 
     const {data} = useCurrency();

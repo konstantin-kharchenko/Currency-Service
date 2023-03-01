@@ -74,7 +74,6 @@ services:
       eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka
     depends_on:
       - eureka-service
-    command: sh -c './wait-for host:8761 -- cmd'
 
   auth-service:
     container_name: 'Auth-Service'
@@ -91,7 +90,7 @@ services:
       - config-service
     links:
       - postgres
-    restart: on-failure
+    restart: always
 
   registration-service:
     container_name: 'Registration-Service'
@@ -109,7 +108,7 @@ services:
       - auth-service
     links:
       - postgres
-    restart: on-failure
+    restart: always
 
   processing-service:
     container_name: 'Processing-Service'
@@ -125,7 +124,7 @@ services:
       - postgres
       - config-service
       - auth-service
-    restart: on-failure
+    restart: always
 
   currency-service1:
     container_name: 'CurrencyConverter1'
@@ -140,7 +139,7 @@ services:
     depends_on:
       - eureka-service
       - config-service
-    restart: on-failure
+    restart: always
 
 
   currency-service2:
@@ -156,7 +155,7 @@ services:
     depends_on:
       - eureka-service
       - config-service
-    restart: on-failure
+    restart: always
 
 
   history-service:
@@ -173,7 +172,7 @@ services:
       - postgres
       - config-service
       - auth-service
-    restart: on-failure
+    restart: always
 
   gateway-service:
     container_name: 'Gateway-Service'

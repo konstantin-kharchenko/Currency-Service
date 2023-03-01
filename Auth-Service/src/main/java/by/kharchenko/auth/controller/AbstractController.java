@@ -17,7 +17,7 @@ public abstract class AbstractController {
         cookie.setMaxAge(20000);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setSecure(false);
+        cookie.setSecure(true);
 
         response.addCookie(cookie);
     }
@@ -27,7 +27,7 @@ public abstract class AbstractController {
         cookie.setMaxAge(20000);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setSecure(false);
+        cookie.setSecure(true);
 
         response.addCookie(cookie);
     }
@@ -35,27 +35,28 @@ public abstract class AbstractController {
 
     protected void putRefreshTokenInCookie(String refresh, HttpServletResponse response) {
         Cookie cookie = new Cookie("refresh-token", refresh);
-        cookie.setMaxAge(5400);
+        cookie.setMaxAge(200000);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setSecure(false);
+        cookie.setDomain("localhost");
+        cookie.setSecure(true);
 
         response.addCookie(cookie);
     }
 
-    protected void deleteCodeFromCookie(String code, HttpServletResponse response){
+    protected void deleteCodeFromCookie(String code, HttpServletResponse response) {
         Cookie cookie = new Cookie(code, null);
         cookie.setMaxAge(0);
-        cookie.setSecure(false);
+        cookie.setSecure(true);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
     }
 
-    protected void deleteStateFromCookie(HttpServletResponse response){
+    protected void deleteStateFromCookie(HttpServletResponse response) {
         Cookie cookie = new Cookie("state", null);
         cookie.setMaxAge(0);
-        cookie.setSecure(false);
+        cookie.setSecure(true);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);

@@ -1,9 +1,6 @@
 package by.kharchenko.processing.service;
 
-import by.kharchenko.processing.dto.AccountDto;
-import by.kharchenko.processing.dto.CreateAccountDto;
-import by.kharchenko.processing.dto.TransferAccountDto;
-import by.kharchenko.processing.dto.UpdateAccountDto;
+import by.kharchenko.processing.dto.*;
 import by.kharchenko.processing.entity.Account;
 
 import java.math.BigDecimal;
@@ -11,6 +8,8 @@ import java.util.List;
 
 public interface AccountService {
     void add(CreateAccountDto createAccountDto);
+
+    AccountDto addMoneyCount(AddCountDto addCountDto) throws Exception;
 
     List<AccountDto> findAll();
 

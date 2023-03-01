@@ -15,11 +15,11 @@ export const request = async ({
                                   params,
                               }) => {
     // получили токен
-    const { accessToken} = getSessionFromStorage() || {};
+    const {accessToken} = getSessionFromStorage() || {};
 
     // если есть токен то добавили его в header
     if (accessToken) {
-        headers.Authorization = accessToken;
+        headers['Access-Token'] = accessToken;
     }
     // формируем параметры запроса
     const options = {
@@ -28,6 +28,7 @@ export const request = async ({
         data,
         params,
         url: baseUrl + url,
+        withCredentials: true
     };
 
     try {
@@ -37,15 +38,20 @@ export const request = async ({
         return result;
     } catch (error) {
         if (error.response.status === 401) {
-            options.method = 'POST';
+            options.method = 'GET';
             options.url = baseUrl + '/auth/refresh';
 
-            const refreshResponse = await axiosInstance(options);
-            localStorage.setItem('access-token', refreshResponse.accessToken);
+            try {
+                const refreshResponse = await axiosInstance(options);
+                localStorage.setItem('access-token', refreshResponse.accessToken);
 
-            const finalResponse = await request({ headers, method, url, data, params });
+                const finalResponse = await request({headers, method, url, data, params});
 
-            return finalResponse;
+                return finalResponse;
+            } catch (error) {
+                localStorage.clear();
+                document.location = "http://localhost:3000/login"
+            }
         }
         throw error;
     }

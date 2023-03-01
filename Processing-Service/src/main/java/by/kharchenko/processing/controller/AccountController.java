@@ -1,15 +1,13 @@
 package by.kharchenko.processing.controller;
 
-import by.kharchenko.processing.dto.AccountDto;
-import by.kharchenko.processing.dto.AccountNumberDto;
-import by.kharchenko.processing.dto.CreateAccountDto;
-import by.kharchenko.processing.dto.TransferAccountDto;
+import by.kharchenko.processing.dto.*;
 import by.kharchenko.processing.entity.Account;
 import by.kharchenko.processing.entity.AccountEvent;
 import by.kharchenko.processing.service.AccountService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,8 +20,13 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping("/create")
-    public void create(@RequestBody CreateAccountDto createAccountDto){
+    public void create(@RequestBody CreateAccountDto createAccountDto) {
         accountService.add(createAccountDto);
+    }
+
+    @PostMapping("/add-money")
+    public ResponseEntity<AccountDto> addMoney(@RequestBody AddCountDto addCountDto) throws Exception {
+        return ResponseEntity.ok(accountService.addMoneyCount(addCountDto));
     }
 
     @GetMapping("/delete/{id}")
