@@ -9,7 +9,6 @@
 + Lombok
 + Mapstruct
 + PostgreSQL
-+ Hibernate Validator
 + Password encoding
 + Liquibase
 + Docker
