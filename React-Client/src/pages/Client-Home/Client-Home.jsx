@@ -9,21 +9,38 @@ const ClientHome = () => {
 
     const [accounts, setAccounts] = useState({});
     const [isLoad, setIsLoad] = useState(false);
-    const getAccounts  = async () => {
-        const { data } = await request({ method: 'GET', url: '/processing/find-all' });
+    const [createShow, setCreateShow] = useState(false);
+
+    const create = async (currency) => {
+        await request({method: 'POST', url: '/processing/create', data: {currency}});
+        await reload();
+        setCreateShow(false);
+    }
+
+    const reload = async () =>{
+        setIsLoad(false);
+        getAccounts().then(() => {
+            setIsLoad(true)
+        });
+    }
+    const getAccounts = async () => {
+        const {data} = await request({method: 'GET', url: '/processing/find-all'});
+        data.sort((a, b) => a.accountNumber.localeCompare(b.accountNumber))
         setAccounts(data);
     };
 
     useEffect(() => {
-        getAccounts().then(()=>{
+        getAccounts().then(() => {
             setIsLoad(true)
         });
     }, []);
     return (
         <div>
+            <AuthHeader create={create} createShow={createShow} setCreateShow={setCreateShow}/>
+            <div className='col'>
+                <AccountList accounts={accounts} isLoad={isLoad} reload={reload}/>
+            </div>
 
-            <AuthHeader/>
-            <AccountList accounts={accounts} isLoad={isLoad}/>
             <CustomFooter/>
         </div>
     );

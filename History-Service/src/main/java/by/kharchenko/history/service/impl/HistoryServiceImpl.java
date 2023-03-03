@@ -3,9 +3,12 @@ package by.kharchenko.history.service.impl;
 import by.kharchenko.history.dto.AccountEvent;
 import by.kharchenko.history.dto.HistoryDto;
 import by.kharchenko.history.entity.Account;
+import by.kharchenko.history.entity.Action;
 import by.kharchenko.history.entity.History;
 import by.kharchenko.history.entity.User;
+import by.kharchenko.history.mapper.HistoryMapper;
 import by.kharchenko.history.repository.AccountRepository;
+import by.kharchenko.history.repository.ActionRepository;
 import by.kharchenko.history.repository.HistoryRepository;
 import by.kharchenko.history.repository.UserRepository;
 import by.kharchenko.history.service.HistoryService;
@@ -26,6 +29,7 @@ public class HistoryServiceImpl implements HistoryService {
     private final HistoryRepository historyRepository;
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
+    private final ActionRepository actionRepository;
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
@@ -38,15 +42,26 @@ public class HistoryServiceImpl implements HistoryService {
             AccountEvent accountEvent = mapper.readValue(value, AccountEvent.class);
 
             User user = userRepository.findById(accountEvent.getUserId()).get();
-            Account account = accountRepository.findById(accountEvent.getAccountId()).get();
-
+            String currency = null;
+            Account fromAccount = null;
+            if (!accountEvent.getFromCurrency().equals("")) {
+                currency = accountEvent.getFromCurrency();
+            }
+            if (accountEvent.getFromAccountId() != -1L) {
+                fromAccount = accountRepository.findById(accountEvent.getFromAccountId()).get();
+            }
+            Account toAccount = accountRepository.findById(accountEvent.getToAccountId()).get();
+            Action action = actionRepository.findActionByActionType(accountEvent.getAction()).get();
             History history = History.builder()
-                    .amount(accountEvent.getAmount())
-                    .uuid(accountEvent.getUuid())
-                    .currency(accountEvent.getCurrency())
+                    .fromAmount(accountEvent.getFromAmount())
+                    .toAmount(accountEvent.getToAmount())
+                    .fromCurrency(currency)
+                    .toCurrency(accountEvent.getToCurrency())
                     .created(accountEvent.getCreated())
                     .user(user)
-                    .account(account)
+                    .fromAccount(fromAccount)
+                    .toAccount(toAccount)
+                    .action(action)
                     .build();
 
             historyRepository.save(history);
@@ -61,7 +76,21 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public HistoryDto findByUUID(String uuid) {
-        return null;
+    public List<HistoryDto> findByAccountNumber(String accountNumber) {
+        Account account = accountRepository.findByAccountNumber(accountNumber).get();
+        List<History> histories = historyRepository.findByAccount(account);
+
+        List<HistoryDto> historyDtoList = HistoryMapper.INSTANCE.HistoriesToHistoriesDto(histories);
+        for (int i = 0; i < historyDtoList.size(); i++) {
+            historyDtoList.get(i).setActionType(histories.get(i).getAction().getActionType().toString());
+            if (histories.get(i).getFromAccount() != null) {
+                historyDtoList.get(i).setFromAccountNumber(histories.get(i).getFromAccount().getAccountNumber());
+            }
+            if (histories.get(i).getToAccount() != null) {
+                historyDtoList.get(i).setToAccountNumber(histories.get(i).getToAccount().getAccountNumber());
+            }
+        }
+
+        return historyDtoList;
     }
 }

@@ -4,10 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterUserDto {
+    @NotEmpty(message = "login must not be empty")
+    @Pattern(regexp = "^[A-Za-z0-9-_]{3,}$", message = "Invalid username")
     private String username;
+
+    @NotEmpty(message = "password must not be empty")
+    @Pattern(regexp = ".*[A-Za-z.-_*].*", message = "Invalid password")
     private String password;
 }

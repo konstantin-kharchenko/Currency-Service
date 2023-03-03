@@ -4,6 +4,16 @@ server:
 spring:
   application:
     name: eureka-server
+  datasource:
+    url: jdbc:postgresql://postgresql:5432/CurrencyDB
+    username: root
+    password: root
+    driver-class-name: org.postgresql.Driver
+    jpa:
+      database: postgresql
+      database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+  liquibase:
+    change-log: db/changelog/db-changelog-master.xml
 
 eureka:
   client:

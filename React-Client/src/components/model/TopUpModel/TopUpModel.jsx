@@ -2,19 +2,18 @@ import React, {useState} from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
-const TopUpModel = ({onHide, topUp, show, setTopUpCount}) => {
+const TopUpModel = ({onHide, topUp, show, setTopUpCount, topUpError, setTopUpError}) => {
 
-    const [errMsg, setErrMsg] = useState('');
-    const onHideAdd = ()=>{
-        setErrMsg('');
+    const onHideAdd = () => {
+        setTopUpError('');
         onHide();
     }
 
     const onInput = (event) => {
         if (event.target.value.includes('-')) {
-            setErrMsg('cannot be negative')
+            setTopUpError('cannot be negative')
         } else {
-            setErrMsg('')
+            setTopUpError('')
         }
         setTopUpCount(event.target.value)
     }
@@ -23,7 +22,7 @@ const TopUpModel = ({onHide, topUp, show, setTopUpCount}) => {
         <Modal
             onHide={onHideAdd}
             show={show}
-            size="lg"
+            size="sm"
             aria-labelledby="contained-modal-title-vcenter"
             centered
         >
@@ -33,13 +32,15 @@ const TopUpModel = ({onHide, topUp, show, setTopUpCount}) => {
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <h4>Enter count, please</h4>
-                <input type={"number"} min={0} onInput={onInput}/>
+                <div className='container text-center'>
+                    <h4>Enter count, please</h4>
+                    <input type={"number"} min={0} onInput={onInput}/>
+                </div>
                 <div className='text-danger text-center'>
-                <h3>
-                    {errMsg}
-                </h3>
-            </div>
+                    <h3>
+                        {topUpError}
+                    </h3>
+                </div>
             </Modal.Body>
             <Modal.Footer>
                 <Button onClick={topUp}>Top Up</Button>

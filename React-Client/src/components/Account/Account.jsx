@@ -2,6 +2,8 @@ import React, {useState} from 'react';
 import TopUpModel from "../model/TopUpModel/TopUpModel";
 import ExchangeModel from "../model/ExchangeModel/ExchangeModel";
 import {request} from "../../services/axiosService";
+import {Errors} from "../../util/Errors";
+import HistoryModel from "../model/HistoryModel/HistoryModel";
 
 const Account = (props) => {
     const [topUpShow, setTopUpShow] = useState(false);
@@ -10,8 +12,11 @@ const Account = (props) => {
     const [exchangeCount, setExchangeCount] = useState(0);
     const [exchangeAccountNumber, setExchangeAccountNumber] = useState('');
     const [account, setAccount] = useState(props.account);
+    const [topUpError, setTopUpError] = useState('');
+    const [exchangeError, setExchangeError] = useState('');
+    const [historyShow, setHistoryShow] = useState(false);
+    const [accountHistory, setAccountHistory] = useState();
     const topUp = async () => {
-        console.log(topUpCount);
         if (topUpCount !== 0 && !topUpCount.includes('-')) {
             const {data} = await request({
                 method: 'POST', url: '/processing/add-money'
@@ -20,36 +25,67 @@ const Account = (props) => {
                     moneyCount: topUpCount
                 }
             });
-            console.log(data);
             setAccount(data);
             setTopUpShow(false)
             setTopUpCount(0);
+            setTopUpShow(false)
         }
-        setTopUpShow(false)
-    }
 
+    }
 
     const exchange = async () => {
         if (exchangeCount !== 0 && !exchangeCount.includes('-') && exchangeAccountNumber !== '') {
-            const {data} = await request({
-                method: 'POST', url: '/processing/transfer'
-                , data: {
-                    fromAccount: account.accountNumber,
-                    toAccount: exchangeAccountNumber,
-                    count: exchangeCount
-                }
-            });
-            console.log(data);
-            setAccount(data);
-            setExchangeShow(false)
-            setExchangeCount(0);
-            setExchangeAccountNumber('');
+            try {
+                await request({
+                    method: 'POST', url: '/processing/transfer'
+                    , data: {
+                        fromAccount: account.accountNumber,
+                        toAccount: exchangeAccountNumber,
+                        count: exchangeCount
+                    }
+                });
+                setExchangeShow(false)
+                setExchangeCount(0);
+                setExchangeAccountNumber('');
+                props.reload();
+            } catch (error) {
+                const body = error.response.data;
+                const errMsg = Errors().get(body.id);
+                setExchangeError(errMsg);
+            }
+
         }
         setTopUpShow(false)
     }
 
+    const deleteAccount = async () => {
+        await request({
+            method: 'POST', url: '/processing/delete'
+            , data: {
+                accountNumber: account.accountNumber,
+            }
+        });
+        props.reload();
+    };
+
+    const history = async () => {
+        console.log("CALL")
+        const {data} = await request({
+            method: 'GET', url: '/history/find/' + account.accountNumber
+        });
+
+        if (data !== undefined) {
+            for (let i = 0; i < data.length; i++) {
+                data[i].created = new Date(data[i].created);
+            }
+            setAccountHistory(data);
+            console.log(data);
+        }
+        setHistoryShow(true)
+    }
+
     return (
-        <div className="list-group-item p-3 border bg-light">
+        <div className="p-3 border border-2 border-primary rounded m-lg-3">
             <h3>
                 Account number: {account.accountNumber}
             </h3>
@@ -77,31 +113,16 @@ const Account = (props) => {
                         Exchange
                     </h4>
                 </a>
-                <a className="btn btn-outline-primary me-2">
+                <a onClick={history} className="btn btn-outline-primary me-2">
                     <h4>
                         History
                     </h4>
                 </a>
-            </div>
-            <div className="modal fade" id="exampleModalLong" tabIndex="-1" role="dialog"
-                 aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLongTitle">Modal title</h5>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            ...
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" className="btn btn-primary">Save changes</button>
-                        </div>
-                    </div>
-                </div>
+                <a onClick={deleteAccount} className="btn btn-outline-danger me-2 float-sm-end">
+                    <h4>
+                        Delete
+                    </h4>
+                </a>
             </div>
             <TopUpModel show={topUpShow}
                         onHide={() => {
@@ -109,6 +130,8 @@ const Account = (props) => {
                         }}
                         topUp={topUp}
                         setTopUpCount={setTopUpCount}
+                        setTopUpError={setTopUpError}
+                        topUpError={topUpError}
             />
             <ExchangeModel show={exchangeShow}
                            onHide={() => {
@@ -117,6 +140,16 @@ const Account = (props) => {
                            setExchangeAccountNumber={setExchangeAccountNumber}
                            exchange={exchange}
                            setExchangeCount={setExchangeCount}
+                           setExchangeError={setExchangeError}
+                           exchangeError={exchangeError}
+            />
+            <HistoryModel show={historyShow}
+                           onHide={() => {
+                               setHistoryShow(false);
+                               setAccountHistory(undefined)
+                           }}
+                          accountHistory={accountHistory}
+                          account={account}
             />
         </div>
     );

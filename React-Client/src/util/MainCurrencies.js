@@ -1,0 +1,1 @@
+export const MainCurrencies = ["USD", "EUR", "GBP"]

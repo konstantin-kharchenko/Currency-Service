@@ -9,10 +9,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -23,7 +28,7 @@ public class AuthController extends AbstractController {
     private final TokenServiceImpl tokenService;
 
     @PostMapping("/")
-    public ResponseEntity auth(@RequestBody AuthUserDto user, HttpServletResponse response) {
+    public ResponseEntity auth(@Valid @RequestBody AuthUserDto user, HttpServletResponse response) {
         Tokens tokens = null;
         try {
             tokens = tokenService.signIn(user);
@@ -50,5 +55,18 @@ public class AuthController extends AbstractController {
     @GetMapping("/full-logout/{id}")
     public void fullLogout(@PathVariable("id") String id) {
         tokenService.fullLogout(id);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
     }
 }

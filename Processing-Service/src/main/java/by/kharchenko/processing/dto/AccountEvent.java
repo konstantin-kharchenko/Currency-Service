@@ -1,16 +1,15 @@
-package by.kharchenko.history.dto;
+package by.kharchenko.processing.dto;
 
-import by.kharchenko.history.entity.ActionType;
+import by.kharchenko.processing.entity.ActionType;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
 @Data
-@NoArgsConstructor
+@Builder
 public class AccountEvent {
     private Long userId;
     private Long fromAccountId;

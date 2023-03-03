@@ -5,10 +5,15 @@ import by.kharchenko.processing.dto.AddCountDto;
 import by.kharchenko.processing.dto.CreateAccountDto;
 import by.kharchenko.processing.dto.TransferAccountDto;
 import by.kharchenko.processing.entity.Account;
-import by.kharchenko.processing.entity.AccountEvent;
+import by.kharchenko.processing.dto.AccountEvent;
+import by.kharchenko.processing.entity.ActionType;
 import by.kharchenko.processing.entity.User;
+import by.kharchenko.processing.exception.AccountNumberNotExistsException;
+import by.kharchenko.processing.exception.MoreAmountException;
+import by.kharchenko.processing.exception.TransactionalException;
 import by.kharchenko.processing.mapper.AccountMapper;
 import by.kharchenko.processing.repository.AccountRepository;
+import by.kharchenko.processing.repository.HistoryRepository;
 import by.kharchenko.processing.repository.UserRepository;
 import by.kharchenko.processing.security.JwtAuthentication;
 import by.kharchenko.processing.service.AccountService;
@@ -35,14 +40,16 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
+    private final HistoryRepository historyRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final String currencyUrl;
     private final Cache<String, BigDecimal> currencyCache;
-    private final List<String> mainCurrencies = new ArrayList<>(List.of("USD", "EUR", "BYN"));
+    private final List<String> mainCurrencies = new ArrayList<>(List.of("USD", "EUR", "GBP"));
 
-    public AccountServiceImpl(AccountRepository accountRepository, UserRepository userRepository, ApplicationEventPublisher eventPublisher, @Value("${currency-service.uri}") String currencyUrl) {
+    public AccountServiceImpl(AccountRepository accountRepository, UserRepository userRepository, HistoryRepository historyRepository, ApplicationEventPublisher eventPublisher, @Value("${currency-service.uri}") String currencyUrl) {
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
+        this.historyRepository = historyRepository;
         this.eventPublisher = eventPublisher;
         this.currencyUrl = currencyUrl;
         this.currencyCache = CacheBuilder.newBuilder().build();
@@ -63,28 +70,31 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public AccountDto addMoneyCount(AddCountDto addCountDto) throws Exception {
-        Account account = accountRepository.findByAccountNumber(addCountDto.getAccountNumber()).orElseThrow(() -> new Exception("This account number not exists"));
+    public AccountDto addMoneyCount(AddCountDto addCountDto) throws AccountNumberNotExistsException, TransactionalException {
+        Account account = accountRepository.findByAccountNumber(addCountDto.getAccountNumber()).orElseThrow(() -> new AccountNumberNotExistsException("This account number not exists"));
         System.out.println(account);
         BigDecimal nowCount = account.getMoneyCount();
         BigDecimal resultCount = nowCount.add(addCountDto.getMoneyCount());
-        System.out.println("Result:" + resultCount);
         account.setMoneyCount(resultCount);
 
-        Account savedAccount = accountRepository.save(account);
+        try {
+            Account savedAccount = accountRepository.save(account);
 
-        System.out.println("After Save");
+            eventPublisher.publishEvent(createEvent(account.getUser().getId()
+                    , -1L
+                    , account.getId()
+                    , ""
+                    , account.getCurrency()
+                    , addCountDto.getMoneyCount()
+                    , addCountDto.getMoneyCount()
+                    , new Date()
+                    , ActionType.REPLENISHMENT
+            ));
 
-        eventPublisher.publishEvent(createEvent(
-                UUID.randomUUID().toString()
-                , account.getUser().getId()
-                , account.getId()
-                , account.getCurrency()
-                , addCountDto.getMoneyCount()
-                , new Date()
-        ));
-
-        return AccountMapper.INSTANCE.accountToAccountDto(savedAccount);
+            return AccountMapper.INSTANCE.accountToAccountDto(savedAccount);
+        } catch (Exception e) {
+            throw new TransactionalException(e);
+        }
     }
 
     @Override
@@ -107,39 +117,49 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public AccountDto transfer(TransferAccountDto transferAccountDto) throws Exception {
-        Account fromAccount = accountRepository.findByAccountNumber(transferAccountDto.getFromAccount()).orElseThrow(() -> new Exception("This account number not exists"));
-        Account toAccount = accountRepository.findByAccountNumber(transferAccountDto.getToAccount()).orElseThrow(() -> new Exception("This account number not exists"));
+    public AccountDto transfer(TransferAccountDto transferAccountDto) throws TransactionalException, MoreAmountException, AccountNumberNotExistsException {
+        try {
 
-        BigDecimal fromCurrency = currencyCache.getIfPresent(fromAccount.getCurrency());
+            Account fromAccount = accountRepository.findByAccountNumber(transferAccountDto.getFromAccount()).orElseThrow(() -> new AccountNumberNotExistsException("This account number not exists"));
+            Account toAccount = accountRepository.findByAccountNumber(transferAccountDto.getToAccount()).orElseThrow(() -> new AccountNumberNotExistsException("This account number not exists"));
 
-        BigDecimal toCurrency = currencyCache.getIfPresent(toAccount.getCurrency());
+            BigDecimal fromCurrency = currencyCache.getIfPresent(fromAccount.getCurrency());
 
-        if (fromCurrency == null || toCurrency == null){
-            updateMainCurrencies();
-            fromCurrency = currencyCache.getIfPresent(fromAccount.getCurrency());
-            toCurrency = currencyCache.getIfPresent(toAccount.getCurrency());
+            BigDecimal toCurrency = currencyCache.getIfPresent(toAccount.getCurrency());
+            if (fromCurrency == null || toCurrency == null) {
+                updateMainCurrencies();
+                fromCurrency = currencyCache.getIfPresent(fromAccount.getCurrency());
+                toCurrency = currencyCache.getIfPresent(toAccount.getCurrency());
+            }
+
+            BigDecimal newMoney = transferAccountDto.getCount().multiply(fromCurrency);
+            newMoney = newMoney.divide(toCurrency, new MathContext(5));
+
+            BigDecimal resultFromAccount = fromAccount.getMoneyCount().subtract(transferAccountDto.getCount());
+            if (resultFromAccount.compareTo(BigDecimal.ZERO) < 0) {
+                throw new MoreAmountException("you are trying to write off more than you have on your account");
+            }
+            fromAccount.setMoneyCount(resultFromAccount);
+            toAccount.setMoneyCount(toAccount.getMoneyCount().add(newMoney));
+
+            Account savedAccount = accountRepository.save(fromAccount);
+            accountRepository.save(toAccount);
+
+            eventPublisher.publishEvent(createEvent(fromAccount.getUser().getId()
+                    , fromAccount.getId()
+                    , toAccount.getId()
+                    , fromAccount.getCurrency()
+                    , toAccount.getCurrency()
+                    , transferAccountDto.getCount()
+                    , newMoney
+                    , new Date()
+                    , ActionType.TRANSFER
+            ));
+
+            return AccountMapper.INSTANCE.accountToAccountDto(savedAccount);
+        } catch (RuntimeException e) {
+            throw new TransactionalException(e);
         }
-
-        BigDecimal newMoney = transferAccountDto.getCount().multiply(fromCurrency);
-        newMoney = newMoney.divide(toCurrency, new MathContext(5));
-
-        fromAccount.setMoneyCount(fromAccount.getMoneyCount().subtract(transferAccountDto.getCount()));
-        toAccount.setMoneyCount(toAccount.getMoneyCount().add(newMoney));
-
-        Account savedAccount = accountRepository.save(fromAccount);
-        accountRepository.save(toAccount);
-
-        eventPublisher.publishEvent(createEvent(
-                UUID.randomUUID().toString()
-                , fromAccount.getUser().getId()
-                , toAccount.getId()
-                , toAccount.getCurrency()
-                , transferAccountDto.getCount()
-                , new Date()
-        ));
-
-        return AccountMapper.INSTANCE.accountToAccountDto(savedAccount);
     }
 
     @Override
@@ -148,27 +168,41 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public void deleteByAccountNumber(String accountNumber) {
-        accountRepository.deleteByAccountNumber(accountNumber);
+        Account account = accountRepository.findByAccountNumber(accountNumber).get();
+        historyRepository.deleteByAccount(account);
+        accountRepository.delete(account);
     }
 
-    private AccountEvent createEvent(String uuid,Long userId,Long accountId,String currency,BigDecimal amount,Date created){
+    private AccountEvent createEvent(Long userId
+            , Long fromAccountId
+            , Long toAccountId
+            , String fromCurrency
+            , String toCurrency
+            , BigDecimal fromAmount
+            , BigDecimal toAmount
+            , Date created
+            , ActionType action) {
         return AccountEvent
                 .builder()
-                .uuid(uuid)
-                .accountId(accountId)
+                .fromAccountId(fromAccountId)
+                .toAccountId(toAccountId)
                 .userId(userId)
-                .currency(currency)
-                .amount(amount)
+                .fromCurrency(fromCurrency)
+                .toCurrency(toCurrency)
+                .fromAmount(fromAmount)
+                .toAmount(toAmount)
                 .created(created)
+                .action(action)
                 .build();
     }
 
     @Scheduled(initialDelay = 30000, fixedRate = 86400000)
     @Async
-    public void updateMainCurrencies(){
+    public void updateMainCurrencies() {
         currencyCache.invalidateAll();
-        for (String currency: mainCurrencies) {
+        for (String currency : mainCurrencies) {
             WebClient webClient = WebClient.create(currencyUrl);
             BigDecimal bigDecimalCurrency = webClient
                     .get()

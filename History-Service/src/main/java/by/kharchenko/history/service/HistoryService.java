@@ -8,5 +8,5 @@ import java.util.List;
 public interface HistoryService {
     void saveFromKafka(ConsumerRecord<Long, String> record);
     List<HistoryDto> findAllByUserId(Long userId);
-    HistoryDto findByUUID(String uuid);
+    List<HistoryDto> findByAccountNumber(String accountNumber);
 }

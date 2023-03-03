@@ -1,4 +1,4 @@
-package by.kharchenko.history.entity;
+package by.kharchenko.processing.entity;
 
 import lombok.*;
 

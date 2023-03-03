@@ -1,12 +1,9 @@
 package by.kharchenko.processing.service;
 
-import by.kharchenko.processing.entity.AccountEvent;
+import by.kharchenko.processing.dto.AccountEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.util.concurrent.ListenableFuture;
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutionException;
@@ -23,7 +20,7 @@ public class AccountEventSendingService {
     }
 
     public void sendEvent(AccountEvent event) throws JsonProcessingException {
-        Long accountId = event.getAccountId();
+        Long accountId = event.getToAccountId();
         String message = mapper.writeValueAsString(event);
 
         var future = kafkaTemplate.send("History",accountId, message);

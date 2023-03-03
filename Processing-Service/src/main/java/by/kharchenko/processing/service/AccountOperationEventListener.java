@@ -1,6 +1,6 @@
 package by.kharchenko.processing.service;
 
-import by.kharchenko.processing.entity.AccountEvent;
+import by.kharchenko.processing.dto.AccountEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.event.TransactionalEventListener;

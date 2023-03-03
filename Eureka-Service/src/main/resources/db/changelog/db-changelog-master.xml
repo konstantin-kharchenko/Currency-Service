@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-table-users" author="postgres">
+        <createTable tableName="users">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="github_id" type="bigint"></column>
+            <column name="google_id" type="bigint"></column>
+            <column name="facebook_id" type="bigint"></column>
+            <column name="email" type="varchar(45)">
+                <constraints unique="true"/>
+            </column>
+            <column name="username" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-table-roles" author="postgres">
+        <createTable tableName="roles">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(64)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-table-users-roles" author="postgres">
+        <createTable tableName="users_roles">
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-table-histories" author="postgres">
+        <createTable tableName="histories">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="from_currency" type="varchar(3)">
+            </column>
+            <column name="to_currency" type="varchar(3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="from_amount" type="decimal" defaultValue="0">
+            </column>
+            <column name="to_amount" type="decimal" defaultValue="0">
+            </column>
+            <column name="created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="from_account_id" type="int">
+            </column>
+            <column name="to_account_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="action_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-table-actions" author="postgres">
+        <createTable tableName="actions">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(45)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet id="create-table-accounts" author="postgres">
+        <createTable tableName="accounts">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="account_number" type="varchar(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="currency" type="varchar(3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="money_count" type="decimal" defaultValue="0">
+            </column>
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-foreign-key-roles-users-role" author="postgres">
+        <addForeignKeyConstraint baseColumnNames="role_id"
+                                 baseTableName="users_roles"
+                                 baseTableSchemaName="public"
+                                 constraintName="fk_role_id"
+                                 deferrable="true"
+                                 deleteCascade="true"
+                                 initiallyDeferred="true"
+                                 referencedColumnNames="id"
+                                 referencedTableName="roles"
+                                 referencedTableSchemaName="public"
+        />
+    </changeSet>
+
+    <changeSet id="add-foreign-key-roles-users-user" author="postgres">
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="users_roles"
+                                 baseTableSchemaName="public"
+                                 constraintName="fk_user_role_id"
+                                 deferrable="true"
+                                 deleteCascade="true"
+                                 initiallyDeferred="true"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"
+                                 referencedTableSchemaName="public"
+        />
+    </changeSet>
+
+    <changeSet id="add-foreign-key-actions-histories" author="postgres">
+        <addForeignKeyConstraint baseColumnNames="action_id"
+                                 baseTableName="histories"
+                                 baseTableSchemaName="public"
+                                 constraintName="fk_action_id"
+                                 deferrable="true"
+                                 deleteCascade="true"
+                                 initiallyDeferred="true"
+                                 referencedColumnNames="id"
+                                 referencedTableName="actions"
+                                 referencedTableSchemaName="public"
+        />
+    </changeSet>
+
+    <changeSet id="add-foreign-key-users-histories" author="postgres">
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="histories"
+                                 baseTableSchemaName="public"
+                                 constraintName="fk_user_history_id"
+                                 deferrable="true"
+                                 deleteCascade="true"
+                                 initiallyDeferred="true"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"
+                                 referencedTableSchemaName="public"
+        />
+    </changeSet>
+
+    <changeSet id="add-foreign-key-to-accounts-histories" author="postgres">
+        <addForeignKeyConstraint baseColumnNames="to_account_id"
+                                 baseTableName="histories"
+                                 baseTableSchemaName="public"
+                                 constraintName="fk_to_account_id"
+                                 deferrable="true"
+                                 deleteCascade="true"
+                                 initiallyDeferred="true"
+                                 referencedColumnNames="id"
+                                 referencedTableName="accounts"
+                                 referencedTableSchemaName="public"
+        />
+    </changeSet>
+
+    <changeSet id="add-foreign-key-from-accounts-histories" author="postgres">
+        <addForeignKeyConstraint baseColumnNames="from_account_id"
+                                 baseTableName="histories"
+                                 baseTableSchemaName="public"
+                                 constraintName="fk_from_account_id"
+                                 deferrable="true"
+                                 deleteCascade="true"
+                                 initiallyDeferred="true"
+                                 referencedColumnNames="id"
+                                 referencedTableName="accounts"
+                                 referencedTableSchemaName="public"
+        />
+    </changeSet>
+
+    <changeSet id="add-foreign-key-users-accounts" author="postgres">
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="accounts"
+                                 baseTableSchemaName="public"
+                                 constraintName="fk_user_account_id"
+                                 deferrable="true"
+                                 deleteCascade="true"
+                                 initiallyDeferred="true"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"
+                                 referencedTableSchemaName="public"
+        />
+    </changeSet>
+
+    <changeSet id="02" author="postgres">
+        <insert tableName="users">
+            <column name="username">kostya</column>
+            <column name="password">-2712-119102118199710449-11510540-7882-121-99</column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="roles_01" author="postgres">
+        <insert tableName="roles">
+            <column name="name">ROLE_USER</column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="roles_02" author="postgres">
+        <insert tableName="roles">
+            <column name="name">ADMIN_USER</column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="users_roles_01" author="postgres">
+        <insert tableName="users_roles">
+            <column name="user_id">1</column>
+            <column name="role_id">1</column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="actions_01" author="postgres">
+        <insert tableName="actions">
+            <column name="name">REPLENISHMENT</column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="actions_02" author="postgres">
+        <insert tableName="actions">
+            <column name="name">TRANSFER</column>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
