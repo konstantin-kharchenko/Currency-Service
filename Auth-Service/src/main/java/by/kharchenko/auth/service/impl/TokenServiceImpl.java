@@ -107,7 +107,7 @@ public class TokenServiceImpl implements TokenService {
             String accessToken = tokenProvider.createAccessToken(user);
             String newRefreshToken = tokenProvider.createRefreshToken(user);
 
-            Tokens tokens = new Tokens(accessToken, refreshToken);
+            Tokens tokens = new Tokens(accessToken, newRefreshToken);
 
             for (Tokens tokens1 : tokensList) {
                 if (tokens1.getRefreshToken().equals(refreshToken)) {

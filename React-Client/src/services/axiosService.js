@@ -6,7 +6,6 @@ const getSessionFromStorage = () => JSON.parse(localStorage.getItem('access-toke
 
 const baseUrl = 'http://localhost:8080';
 
-// фабрика создания запросов
 export const request = async ({
                                   headers = {},
                                   method = 'GET',
@@ -14,14 +13,11 @@ export const request = async ({
                                   data,
                                   params,
                               }) => {
-    // получили токен
     const {accessToken} = getSessionFromStorage() || {};
 
-    // если есть токен то добавили его в header
     if (accessToken) {
         headers['Access-Token'] = accessToken;
     }
-    // формируем параметры запроса
     const options = {
         headers,
         method,
@@ -32,20 +28,37 @@ export const request = async ({
     };
 
     try {
-        // выполняем запрос
         const result = await axiosInstance(options);
 
         return result;
     } catch (error) {
         if (error.response.status === 401) {
-            options.method = 'GET';
-            options.url = baseUrl + '/auth/refresh';
+
+            const refreshOptions = {
+                headers :{},
+                method: "GET",
+                url: baseUrl + '/auth/refresh',
+                withCredentials: true
+            }
 
             try {
-                const refreshResponse = await axiosInstance(options);
-                localStorage.setItem('access-token', refreshResponse.accessToken);
 
-                const finalResponse = await request({headers, method, url, data, params});
+                console.log("refresh request options: " + refreshOptions.url)
+                const refreshResponse = await axiosInstance(refreshOptions);
+                if (refreshResponse.data.accessToken!==undefined) {
+                    localStorage.setItem('access-token', JSON.stringify({accessToken: refreshResponse.data.accessToken}));
+                }
+                headers['Access-Token'] = refreshResponse.data.accessToken;
+                const finalOptions = {
+                    headers,
+                    method,
+                    data,
+                    params,
+                    url: baseUrl + url,
+                    withCredentials: true
+                }
+
+                const finalResponse = await axiosInstance(finalOptions);
 
                 return finalResponse;
             } catch (error) {
