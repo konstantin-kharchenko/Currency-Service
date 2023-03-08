@@ -2,6 +2,8 @@ package by.kharchenko.processing.repository;
 
 import by.kharchenko.processing.entity.Account;
 import by.kharchenko.processing.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,5 +21,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     void deleteByAccountNumber(String accountNumber);
 
     @Query(value = "select * from accounts a where a.user_id = ?1", nativeQuery = true)
-    List<Account> findByUserId(Long id);
+    Page<Account> findByUserId(Long id, Pageable pageable);
+
+    @Query(value = "select * from accounts a where a.user_id = ?1 and a.currency = ?2", nativeQuery = true)
+    Page<Account> findByUserIdAndCurrency(Long id, String currency, Pageable pageable);
 }

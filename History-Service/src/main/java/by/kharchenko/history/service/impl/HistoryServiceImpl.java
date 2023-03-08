@@ -17,6 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,7 @@ public class HistoryServiceImpl implements HistoryService {
     private final AccountRepository accountRepository;
     private final ActionRepository actionRepository;
     private final ObjectMapper mapper = new ObjectMapper();
+    private final HistoryMapper historyMapper;
 
     @Override
     @KafkaListener(topics = "History")
@@ -76,18 +79,18 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public List<HistoryDto> findByAccountNumber(String accountNumber) {
+    public Page<HistoryDto> findByAccountNumber(String accountNumber, Pageable pageable) {
         Account account = accountRepository.findByAccountNumber(accountNumber).get();
-        List<History> histories = historyRepository.findByAccount(account);
+        Page<History> histories = historyRepository.findByAccount(account, pageable);
 
-        List<HistoryDto> historyDtoList = HistoryMapper.INSTANCE.HistoriesToHistoriesDto(histories);
-        for (int i = 0; i < historyDtoList.size(); i++) {
-            historyDtoList.get(i).setActionType(histories.get(i).getAction().getActionType().toString());
-            if (histories.get(i).getFromAccount() != null) {
-                historyDtoList.get(i).setFromAccountNumber(histories.get(i).getFromAccount().getAccountNumber());
+        Page<HistoryDto> historyDtoList = histories.map(historyMapper::HistoryToHistoryDto);
+        for (int i = 0; i < historyDtoList.getContent().size(); i++) {
+            historyDtoList.getContent().get(i).setActionType(histories.getContent().get(i).getAction().getActionType().toString());
+            if (histories.getContent().get(i).getFromAccount() != null) {
+                historyDtoList.getContent().get(i).setFromAccountNumber(histories.getContent().get(i).getFromAccount().getAccountNumber());
             }
-            if (histories.get(i).getToAccount() != null) {
-                historyDtoList.get(i).setToAccountNumber(histories.get(i).getToAccount().getAccountNumber());
+            if (histories.getContent().get(i).getToAccount() != null) {
+                historyDtoList.getContent().get(i).setToAccountNumber(histories.getContent().get(i).getToAccount().getAccountNumber());
             }
         }
 

@@ -6,6 +6,8 @@ import by.kharchenko.processing.exception.MoreAmountException;
 import by.kharchenko.processing.exception.TransactionalException;
 import by.kharchenko.processing.service.AccountService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -14,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -49,8 +50,8 @@ public class AccountController {
     }
 
     @GetMapping("/find-all")
-    public List<AccountDto> findAll() throws Exception {
-        return accountService.findAll();
+    public Page<AccountDto> findAll(@RequestParam(required = false) String currency, Pageable pageable) throws Exception {
+        return accountService.findAll(pageable, currency);
     }
 
     @GetMapping("/find/{id}")

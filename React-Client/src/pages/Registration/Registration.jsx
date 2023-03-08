@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import UnAuthHeader from "../../components/Header/UnAuthHeader";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../auth/Auth";
+import CustomFooter from "../../components/Footer/CustomFooter";
 
 const Registration = () => {
     const [errorMessages, setErrorMessages] = useState({});
@@ -66,6 +67,7 @@ const Registration = () => {
                 </form>
                 {renderErrorMessage("all")}
             </div>
+            <CustomFooter/>
         </div>
     );
 };

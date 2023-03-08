@@ -5,7 +5,7 @@ import {MainCurrencies} from "../../../util/MainCurrencies";
 
 const NewAccountModel = ({onHide, create, show}) => {
 
-    const currencies = MainCurrencies.map((element, index) =>
+    const currenciesToCreate = MainCurrencies.map((element, index) =>
         <option key={index.toString()}>{element}</option>
     );
 
@@ -31,7 +31,7 @@ const NewAccountModel = ({onHide, create, show}) => {
                 <h3>Choose currency, please</h3>
                 <div className='container text-center h4'>
                     <select id='select'>
-                        {currencies}
+                        {currenciesToCreate}
                     </select>
                 </div>
             </Modal.Body>

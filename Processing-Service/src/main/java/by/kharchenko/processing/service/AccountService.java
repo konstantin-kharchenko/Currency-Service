@@ -1,20 +1,21 @@
 package by.kharchenko.processing.service;
 
-import by.kharchenko.processing.dto.*;
-import by.kharchenko.processing.entity.Account;
+import by.kharchenko.processing.dto.AccountDto;
+import by.kharchenko.processing.dto.AddCountDto;
+import by.kharchenko.processing.dto.CreateAccountDto;
+import by.kharchenko.processing.dto.TransferAccountDto;
 import by.kharchenko.processing.exception.AccountNumberNotExistsException;
 import by.kharchenko.processing.exception.MoreAmountException;
 import by.kharchenko.processing.exception.TransactionalException;
-
-import java.math.BigDecimal;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface AccountService {
     void add(CreateAccountDto createAccountDto);
 
     AccountDto addMoneyCount(AddCountDto addCountDto) throws AccountNumberNotExistsException, TransactionalException;
 
-    List<AccountDto> findAll();
+    Page<AccountDto> findAll(Pageable pageable, String currency);
 
     AccountDto find(Long id);
 

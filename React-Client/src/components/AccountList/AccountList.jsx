@@ -4,7 +4,7 @@ import Account from "../Account/Account";
 const AccountList = ({accounts, isLoad, reload}) => {
     let listData;
     if (isLoad){
-        listData = accounts.map((account, key) =>
+        listData = accounts.content.map((account, key) =>
            <Account key={key} account={account} reload={reload}/>
         );
     }

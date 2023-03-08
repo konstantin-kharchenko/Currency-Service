@@ -1,5 +1,6 @@
-import {useState, useEffect, createContext, useContext} from 'react';
+import React, {useState, useEffect, createContext, useContext} from 'react';
 import axios from "axios";
+import SockJsClient from "react-stomp";
 
 const CurrencyContext = createContext({});
 
@@ -24,32 +25,23 @@ function Currency({children}) {
         setData({eur, usd, gbp});
     };
 
-    function getTime(time){
-        const reloadDate = new Date(time.getFullYear(), time.getMonth(), time.getDay())
-        reloadDate.setDate(time.getDate() + 1);
-        return reloadDate - time;
-    }
-
-    const reloadCurrency = () => {
-        const differenceTime = getTime(new Date());
-        setTimeout(reload, differenceTime);
-    }
-
-    function reload() {
-        setMainCurrencies();
-        const differenceTime = getTime(new Date());
-        setTimeout(reload, differenceTime);
-
+    let onMessageReceived = (msg) => {
+        setData(msg);
     }
 
     useEffect(() => {
         setMainCurrencies();
-        // eslint-disable-next-line
-        reloadCurrency();
     }, []);
 
     return (
         <CurrencyContext.Provider value={{data, setMainCurrencies}}>
+            <SockJsClient
+                url='http://localhost:8085/currency/main-currencies'
+                topics={['/currency/main-currency/outgoing']}
+                onConnect={()=>console.log("Connected!")}
+                onDisconnect={()=>console.log("Disconnected!")}
+                onMessage={msg => onMessageReceived(msg)}
+            />
             {isLoad && children}
         </CurrencyContext.Provider>
     )

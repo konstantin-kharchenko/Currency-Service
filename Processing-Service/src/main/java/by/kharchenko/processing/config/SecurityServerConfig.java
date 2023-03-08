@@ -30,9 +30,7 @@ public class SecurityServerConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.cors()
-                .and()
-                .httpBasic().disable()
+        http.cors().disable()
                 .csrf().disable()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -46,12 +44,5 @@ public class SecurityServerConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin().disable()
                 .addFilterBefore(new JwtAuthorizationFilter(authUri, authenticationManager()), UsernamePasswordAuthenticationFilter.class);
-    }
-
-    @Bean
-    public AuthenticationManager noopAuthenticationManager() {
-        return authentication -> {
-            throw new AuthenticationServiceException("Authentication is disabled");
-        };
     }
 }

@@ -21,6 +21,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,14 +47,17 @@ public class AccountServiceImpl implements AccountService {
     private final String currencyUrl;
     private final Cache<String, BigDecimal> currencyCache;
     private final List<String> mainCurrencies = new ArrayList<>(List.of("USD", "EUR", "GBP"));
+    private final AccountMapper accountMapper;
 
-    public AccountServiceImpl(AccountRepository accountRepository, UserRepository userRepository, HistoryRepository historyRepository, ApplicationEventPublisher eventPublisher, @Value("${currency-service.uri}") String currencyUrl) {
+    public AccountServiceImpl(AccountRepository accountRepository, UserRepository userRepository, HistoryRepository historyRepository, ApplicationEventPublisher eventPublisher, @Value("${currency-service.uri}") String currencyUrl,
+                              AccountMapper accountMapper) {
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
         this.historyRepository = historyRepository;
         this.eventPublisher = eventPublisher;
         this.currencyUrl = currencyUrl;
         this.currencyCache = CacheBuilder.newBuilder().build();
+        this.accountMapper = accountMapper;
     }
 
     @Override
@@ -98,10 +103,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountDto> findAll() {
+    public Page<AccountDto> findAll(Pageable pageable, String currency) {
         Long id = ((JwtAuthentication) SecurityContextHolder.getContext().getAuthentication()).getUserId();
-        List<Account> accounts = accountRepository.findByUserId(id);
-        return AccountMapper.INSTANCE.accountListToAccountDtoList(accounts);
+        Page<Account> accountPage = null;
+        if (currency != null){
+            accountPage = accountRepository.findByUserIdAndCurrency(id, currency, pageable);
+        }else {
+            accountPage = accountRepository.findByUserId(id, pageable);
+        }
+        return accountPage.map(accountMapper::accountToAccountDto);
     }
 
     @Override

@@ -69,21 +69,22 @@ const Account = (props) => {
     };
 
     const history = async () => {
-        console.log("CALL")
+       newPage(0);
+    }
+
+    const newPage = async (page) => {
         const {data} = await request({
-            method: 'GET', url: '/history/find/' + account.accountNumber
+            method: 'GET', url: '/history/find?page=' + page + '&size=3&sort=id,DESC&account-number=' + account.accountNumber
         });
 
         if (data !== undefined) {
-            for (let i = 0; i < data.length; i++) {
-                data[i].created = new Date(data[i].created);
+            for (let i = 0; i < data.content.length; i++) {
+                data.content[i].created = new Date(data.content[i].created);
             }
             setAccountHistory(data);
-            console.log(data);
         }
         setHistoryShow(true)
-    }
-
+    };
     return (
         <div className="p-3 border border-2 border-primary rounded m-lg-3">
             <h3>
@@ -146,10 +147,10 @@ const Account = (props) => {
             <HistoryModel show={historyShow}
                            onHide={() => {
                                setHistoryShow(false);
-                               setAccountHistory(undefined)
                            }}
-                          accountHistory={accountHistory}
                           account={account}
+                          accountHistory={accountHistory}
+                          newPage={newPage}
             />
         </div>
     );
