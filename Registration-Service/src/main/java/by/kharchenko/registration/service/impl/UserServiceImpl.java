@@ -3,6 +3,7 @@ package by.kharchenko.registration.service.impl;
 import by.kharchenko.registration.dto.*;
 import by.kharchenko.registration.entity.Role;
 import by.kharchenko.registration.entity.User;
+import by.kharchenko.registration.exception.UsernameAlreadyExistsException;
 import by.kharchenko.registration.mapper.UserMapper;
 import by.kharchenko.registration.repository.RoleRepository;
 import by.kharchenko.registration.repository.UserRepository;
@@ -41,14 +42,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void add(RegisterUserDto userDto) {
-        User user = UserMapper.INSTANCE.registerUserDtoToUser(userDto);
-        user.setPassword(CustomPasswordEncoder.encode(user.getPassword()));
-        Role role = roleRepository.findById(1L).get();
-        Set<Role> roles = new HashSet<>();
-        roles.add(role);
-        user.setRoles(roles);
-        userRepository.save(user);
+    public void add(RegisterUserDto userDto) throws UsernameAlreadyExistsException {
+        Optional<User> optionalUser = userRepository.findByUsername(userDto.getUsername());
+        if (!optionalUser.isPresent()) {
+            User user = UserMapper.INSTANCE.registerUserDtoToUser(userDto);
+            user.setPassword(CustomPasswordEncoder.encode(user.getPassword()));
+            Role role = roleRepository.findById(1L).get();
+            Set<Role> roles = new HashSet<>();
+            roles.add(role);
+            user.setRoles(roles);
+            userRepository.save(user);
+        }else {
+            throw new UsernameAlreadyExistsException("Username is already exists");
+        }
     }
 
     @Override

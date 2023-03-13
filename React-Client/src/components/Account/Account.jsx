@@ -1,9 +1,13 @@
 import React, {useState} from 'react';
-import TopUpModel from "../model/TopUpModel/TopUpModel";
-import ExchangeModel from "../model/ExchangeModel/ExchangeModel";
+import TopUpModel from "../Models/TopUpModel/TopUpModel";
+import ExchangeModel from "../Models/ExchangeModel/ExchangeModel";
 import {request} from "../../services/axiosService";
-import {Errors} from "../../util/Errors";
-import HistoryModel from "../model/HistoryModel/HistoryModel";
+import {accountErrors} from "../../util/Errors";
+import HistoryModel from "../Models/HistoryModel/HistoryModel";
+import europe from "../../images/Flag_of_Europe.png";
+import america from "../../images/Flag_of_America.png";
+import british from "../../images/Flag_of_British.png";
+import russia from "../../images/Flag_of_Russia.png"
 
 const Account = (props) => {
     const [topUpShow, setTopUpShow] = useState(false);
@@ -16,6 +20,7 @@ const Account = (props) => {
     const [exchangeError, setExchangeError] = useState('');
     const [historyShow, setHistoryShow] = useState(false);
     const [accountHistory, setAccountHistory] = useState();
+
     const topUp = async () => {
         if (topUpCount !== 0 && !topUpCount.includes('-')) {
             const {data} = await request({
@@ -26,7 +31,6 @@ const Account = (props) => {
                 }
             });
             setAccount(data);
-            setTopUpShow(false)
             setTopUpCount(0);
             setTopUpShow(false)
         }
@@ -50,7 +54,7 @@ const Account = (props) => {
                 props.reload();
             } catch (error) {
                 const body = error.response.data;
-                const errMsg = Errors().get(body.id);
+                const errMsg = accountErrors().get(body.id);
                 setExchangeError(errMsg);
             }
 
@@ -68,13 +72,26 @@ const Account = (props) => {
         props.reload();
     };
 
+    let flag;
+    if (account.currency === 'USD') {
+        flag = america;
+    } else if (account.currency === 'EUR') {
+        flag = europe;
+    } else if (account.currency === 'GBP') {
+        flag = british;
+    }
+    else if (account.currency === 'RUB') {
+        flag = russia;
+    }
     const history = async () => {
-       newPage(0);
+        newPageInHistory(0);
+
     }
 
-    const newPage = async (page) => {
+    const newPageInHistory = async (page) => {
         const {data} = await request({
-            method: 'GET', url: '/history/find?page=' + page + '&size=3&sort=id,DESC&account-number=' + account.accountNumber
+            method: 'GET',
+            url: '/history/find?page=' + page + '&size=3&sort=id,DESC&account-number=' + account.accountNumber
         });
 
         if (data !== undefined) {
@@ -86,44 +103,43 @@ const Account = (props) => {
         setHistoryShow(true)
     };
     return (
-        <div className="p-3 border border-2 border-primary rounded m-lg-3">
-            <h3>
-                Account number: {account.accountNumber}
-            </h3>
-            <div>
-                <h5>
-                    <div className='row'>
-                        <div className='col-sm'>
-                            Currency: {account.currency}
-                        </div>
-                        <div className='col-sm'>
-                            Balance: {account.moneyCount}
-                        </div>
-                    </div>
-                </h5>
+        <div className="p-3 border rounded m-lg-5 text-dark bg-secondary bg-opacity-10 shadow-lg">
+            <div className='d-flex justify-content-between'>
+                <div className='h5'>
+                    Account number: <span className='text-danger'>{account.accountNumber}</span>
+                </div>
+                <div className='h3'>
+                    <span>{account.moneyCount} </span>
+                    <img className='rounded shadow-lg' src={flag} width="50" height="30" alt="\"/>
+                </div>
+            </div>
+            <div className='h5'>
+                <span>Currency code: {account.currency} </span>
             </div>
             <hr/>
             <div>
-                <a onClick={() => setTopUpShow(true)} className="btn btn-outline-primary me-2">
-                    <h4>
+                <button onClick={() => setTopUpShow(true)} className="btn btn-warning me-2 border-dark shadow-lg">
+                    <div className='h6'>
                         Top Up
-                    </h4>
-                </a>
-                <a onClick={() => setExchangeShow(true)} className="btn btn-outline-primary me-2">
-                    <h4>
+                    </div>
+                </button>
+                <button onClick={() => setExchangeShow(true)} className="btn btn-dark me-2  shadow-lg">
+                    <div className='h6'>
                         Exchange
-                    </h4>
-                </a>
-                <a onClick={history} className="btn btn-outline-primary me-2">
-                    <h4>
+                    </div>
+
+                </button>
+                <button onClick={history} className="btn btn-outline-dark me-2  shadow-lg">
+                    <div className='h6'>
                         History
-                    </h4>
-                </a>
-                <a onClick={deleteAccount} className="btn btn-outline-danger me-2 float-sm-end">
-                    <h4>
+                    </div>
+
+                </button>
+                <button onClick={deleteAccount} className="btn btn-outline-danger me-2 float-sm-end shadow-lg">
+                    <div className='h6'>
                         Delete
-                    </h4>
-                </a>
+                    </div>
+                </button>
             </div>
             <TopUpModel show={topUpShow}
                         onHide={() => {
@@ -145,12 +161,13 @@ const Account = (props) => {
                            exchangeError={exchangeError}
             />
             <HistoryModel show={historyShow}
-                           onHide={() => {
-                               setHistoryShow(false);
-                           }}
+                          onHide={() => {
+                              setHistoryShow(false);
+                          }}
                           account={account}
+                          flag={flag}
                           accountHistory={accountHistory}
-                          newPage={newPage}
+                          newPageInHistory={newPageInHistory}
             />
         </div>
     );

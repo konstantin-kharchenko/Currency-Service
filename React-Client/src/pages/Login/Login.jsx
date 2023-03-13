@@ -2,9 +2,10 @@ import React, {useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../auth/Auth";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './Login.module.css';
 import UnAuthHeader from "../../components/Header/UnAuthHeader";
 import CustomFooter from "../../components/Footer/CustomFooter";
+import CustomContent from "../../components/Content/CustomContent";
+import {authErrors} from "../../util/Errors";
 
 const Login = () => {
 
@@ -16,23 +17,37 @@ const Login = () => {
     const navigate = useNavigate();
     const {login} = useAuth();
     const {loginByOAuth} = useAuth();
-    const [errorMessages, setErrorMessages] = useState({});
-
-    const errors = {
-        uname: "invalid username",
-        pass: "invalid password",
-        usernameNotFound: "Bad username or password"
-    };
+    const [errorMessages, setErrorMessages] = useState('');
+    const [errorUsernameMessages, setErrorUsernameMessages] = useState('');
+    const [errorPasswordMessages, setErrorPasswordMessages] = useState('');
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         const username = document.forms[0].username.value;
         const password = document.forms[0].password.value;
+        setErrorUsernameMessages('');
+        setErrorPasswordMessages('');
+        setErrorMessages('');
         try {
             await login({username, password});
             navigate('/');
         } catch (err) {
-            setErrorMessages({name: "all", message: errors.usernameNotFound});
+            console.log(err.response.data);
+            if (err.response.data.id === 1) {
+                const errMsg = authErrors().get(err.response.data.id);
+                setErrorMessages(errMsg);
+            }
+            else if (err.response.data.id === 2){
+                console.log(err.response.data.messages['username'])
+                if (err.response.data.messages['username'] !== undefined){
+                    const errMsg = authErrors().get(2);
+                    setErrorUsernameMessages(errMsg);
+                }
+                if (err.response.data.messages['password'] !== undefined){
+                    const errMsg = authErrors().get(3);
+                    setErrorPasswordMessages(errMsg);
+                }
+            }
         }
 
     };
@@ -54,7 +69,7 @@ const Login = () => {
         let code = params['code']
         if (code !== undefined) {
             fetch('http://localhost:8080/auth/code?code=' + code + '&client_id=' + serverData.client_id + '&client_secret=' + serverData.client_secret
-            , {
+                , {
                     credentials: 'include'
                 })
                 .then(response => response.json())
@@ -68,55 +83,59 @@ const Login = () => {
     }
 
     code()
-    const renderErrorMessage = (name) =>
-        name === errorMessages.name && (
-            <div className="error">{errorMessages.message}</div>
-        );
+    const renderErrorMessage = () => <div className="mt-2 text-danger">{errorMessages}</div>
+
+    const renderUsernameMessage = () => <div className="mt-2 text-danger">{errorUsernameMessages}</div>
+
+    const renderPasswordMessage = () => <div className="mt-2 text-danger">{errorPasswordMessages}</div>
 
     return (
-        <div>
-            <UnAuthHeader/>
-            <div className='container text-center flex-column'>
-                <form onSubmit={handleSubmit}>
-                    <div>
-                        <input
-                            id='username'
-                            type="text"
-                            className=""
-                            placeholder="Enter username"
-                            required={true}
-                        />
-                    </div>
-                    {renderErrorMessage("uname")}
-                    <div className="form-group mt-3">
-                        <input
-                            id='password'
-                            type="password"
-                            className=""
-                            placeholder="Enter password"
-                            required={true}
-                        />
-                    </div>
-                    {renderErrorMessage("pass")}
-                    <div className="mt-3">
-                        <button type="submit" className="btn btn-primary">
-                            Sign-In
-                        </button>
-                    </div>
-                    <div className="mt-3">
-                        <a href="http://localhost:8080/auth/to-github" type="submit" className="btn btn-outline-primary">
-                            Sign in with GitHub
-                        </a>
-                    </div>
-                    <div className="mt-3">
-                        <a href="http://localhost:8080/auth/to-facebook" type="submit" className="btn btn-outline-primary">
-                            Sign in with FaceBook
-                        </a>
-                    </div>
-
-                </form>
-                {renderErrorMessage("all")}
-            </div>
+        <div className='main'>
+                <UnAuthHeader/>
+            <CustomContent>
+                <div className="position-absolute top-50 start-50 translate-middle p-5 border rounded-3 shadow-lg">
+                    <form onSubmit={handleSubmit} className='container text-center'>
+                        <div>
+                            <input
+                                id='username'
+                                type="text"
+                                className="form-control shadow-lg"
+                                placeholder="Enter username"
+                                required={true}
+                            />
+                        </div>
+                        {renderUsernameMessage()}
+                        <div className="form-group mt-3">
+                            <input
+                                id='password'
+                                type="password"
+                                className="form-control shadow-lg"
+                                placeholder="Enter password"
+                                required={true}
+                            />
+                        </div>
+                        {renderPasswordMessage()}
+                        <div className="mt-3">
+                            <button type="submit" className="btn btn-warning border border-dark shadow-lg">
+                                Sign-In
+                            </button>
+                        </div>
+                        <div className="mt-3">
+                            <a href="http://localhost:8080/auth/to-github" type="submit"
+                               className="btn btn-outline-dark shadow-lg">
+                                Sign in with GitHub
+                            </a>
+                        </div>
+                        <div className="mt-3">
+                            <a href="http://localhost:8080/auth/to-facebook" type="submit"
+                               className="btn btn-outline-dark shadow-lg">
+                                Sign in with FaceBook
+                            </a>
+                        </div>
+                        {renderErrorMessage()}
+                    </form>
+                </div>
+            </CustomContent>
             <CustomFooter/>
         </div>
     );

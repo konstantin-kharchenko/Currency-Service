@@ -1,25 +1,18 @@
 package by.kharchenko.registration.controller;
 
-import by.kharchenko.registration.dto.FaceBookUser;
-import by.kharchenko.registration.dto.GitHubUser;
-import by.kharchenko.registration.dto.RegisterUserDto;
-import by.kharchenko.registration.dto.ResultUserAfterRegisterDto;
+import by.kharchenko.registration.dto.*;
+import by.kharchenko.registration.exception.UsernameAlreadyExistsException;
 import by.kharchenko.registration.service.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -29,7 +22,7 @@ public class RegisterController {
     private final UserService userService;
 
     @PostMapping("/")
-    public void add(@Valid @RequestBody RegisterUserDto userDto) {
+    public void add(@Valid @RequestBody RegisterUserDto userDto) throws UsernameAlreadyExistsException {
         userService.add(userDto);
     }
 
@@ -46,8 +39,16 @@ public class RegisterController {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<ExceptionMessageDto> handleAccountNumberNotExistsException(UsernameAlreadyExistsException ex) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("Username already exists", ex.getMessage());
+        return ResponseEntity.badRequest().body(new ExceptionMessageDto(1L, errors));
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(
+    public ResponseEntity<ExceptionMessageDto> handleValidationExceptions(
             MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
@@ -55,6 +56,6 @@ public class RegisterController {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
-        return errors;
+        return ResponseEntity.badRequest().body(new ExceptionMessageDto(2L, errors));
     }
 }

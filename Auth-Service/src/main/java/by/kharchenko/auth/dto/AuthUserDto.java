@@ -16,6 +16,6 @@ public class AuthUserDto {
     private String username;
 
     @NotEmpty(message = "password must not be empty")
-    @Pattern(regexp = ".*[A-Za-z.-_*].*", message = "Invalid password")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[_=-])[A-Za-z\\d_=-]{8,}$", message = "Invalid password")
     private String password;
 }

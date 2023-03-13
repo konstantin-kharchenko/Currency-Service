@@ -4,6 +4,7 @@ import by.kharchenko.auth.dto.AuthUserDto;
 import by.kharchenko.auth.dto.AccessTokenDto;
 import by.kharchenko.auth.dto.Tokens;
 import by.kharchenko.auth.dto.JwtAuthenticationDto;
+import by.kharchenko.auth.exception.InvalidUsernameOrPasswordException;
 import by.kharchenko.auth.service.impl.TokenServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -28,13 +29,8 @@ public class AuthController extends AbstractController {
     private final TokenServiceImpl tokenService;
 
     @PostMapping("/")
-    public ResponseEntity auth(@Valid @RequestBody AuthUserDto user, HttpServletResponse response) {
-        Tokens tokens = null;
-        try {
-            tokens = tokenService.signIn(user);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<AccessTokenDto> auth(@Valid @RequestBody AuthUserDto user, HttpServletResponse response) throws InvalidUsernameOrPasswordException, ExecutionException {
+        Tokens tokens = tokenService.signIn(user);
         putRefreshTokenInCookie(tokens.getRefreshToken(), response);
         return ResponseEntity.ok(new AccessTokenDto(tokens.getAccessToken()));
     }
@@ -55,18 +51,5 @@ public class AuthController extends AbstractController {
     @GetMapping("/full-logout/{id}")
     public void fullLogout(@PathVariable("id") String id) {
         tokenService.fullLogout(id);
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(
-            MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return errors;
     }
 }

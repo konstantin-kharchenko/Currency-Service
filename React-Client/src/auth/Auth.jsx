@@ -1,6 +1,5 @@
 import React, {createContext, useContext, useEffect, useState} from 'react';
 import {loginUser, registerUser} from "../services/authService";
-import Cookies from "js-cookie";
 
 const AuthContext = createContext({});
 export const useAuth = () => useContext(AuthContext);
@@ -39,7 +38,6 @@ const Auth = ({ children }) => {
     const logout = () => {
         setIsAuth(false);
         localStorage.clear();
-        Cookies.remove('refresh-token')
     }
 
     return (

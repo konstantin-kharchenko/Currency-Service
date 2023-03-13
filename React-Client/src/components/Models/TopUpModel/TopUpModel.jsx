@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
@@ -20,13 +20,14 @@ const TopUpModel = ({onHide, topUp, show, setTopUpCount, topUpError, setTopUpErr
 
     return (
         <Modal
+            className='bg-dark bg-opacity-75'
             onHide={onHideAdd}
             show={show}
             size="sm"
             aria-labelledby="contained-modal-title-vcenter"
             centered
         >
-            <Modal.Header closeButton>
+            <Modal.Header>
                 <Modal.Title id="contained-modal-title-vcenter">
                     Top Up
                 </Modal.Title>
@@ -34,7 +35,7 @@ const TopUpModel = ({onHide, topUp, show, setTopUpCount, topUpError, setTopUpErr
             <Modal.Body>
                 <div className='container text-center'>
                     <h4>Enter count, please</h4>
-                    <input type={"number"} min={0} onInput={onInput}/>
+                    <input className='form-control shadow-lg' type={"number"} min={0} onInput={onInput}/>
                 </div>
                 <div className='text-danger text-center'>
                     <h3>
@@ -43,7 +44,7 @@ const TopUpModel = ({onHide, topUp, show, setTopUpCount, topUpError, setTopUpErr
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button onClick={topUp}>Top Up</Button>
+                <Button className='btn btn-warning border-dark shadow-lg' onClick={topUp}>Top Up</Button>
             </Modal.Footer>
         </Modal>
     );

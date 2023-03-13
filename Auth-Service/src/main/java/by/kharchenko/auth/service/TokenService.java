@@ -4,13 +4,14 @@ import by.kharchenko.auth.dto.AuthUserDto;
 import by.kharchenko.auth.dto.CodeUser;
 import by.kharchenko.auth.dto.Tokens;
 import by.kharchenko.auth.dto.JwtAuthenticationDto;
+import by.kharchenko.auth.exception.InvalidUsernameOrPasswordException;
 
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public interface TokenService {
 
-    Tokens signIn(AuthUserDto authUserDto) throws Exception;
+    Tokens signIn(AuthUserDto authUserDto) throws InvalidUsernameOrPasswordException, ExecutionException;
 
     JwtAuthenticationDto check(String accessToken) throws ExecutionException;
 

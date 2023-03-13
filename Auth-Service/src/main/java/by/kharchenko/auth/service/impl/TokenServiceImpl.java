@@ -2,6 +2,7 @@ package by.kharchenko.auth.service.impl;
 
 import by.kharchenko.auth.dto.*;
 import by.kharchenko.auth.dto.Tokens;
+import by.kharchenko.auth.exception.InvalidUsernameOrPasswordException;
 import by.kharchenko.auth.model.User;
 import by.kharchenko.auth.repository.RoleRepository;
 import by.kharchenko.auth.repository.UserRepository;
@@ -40,7 +41,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public Tokens signIn(AuthUserDto authUserDto) throws Exception {
+    public Tokens signIn(AuthUserDto authUserDto) throws InvalidUsernameOrPasswordException, ExecutionException {
         var optionalUser = userRepository.findByUsername(authUserDto.getUsername());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -59,10 +60,10 @@ public class TokenServiceImpl implements TokenService {
 
                 return tokens;
             } else {
-                throw new Exception("invalid password");
+                throw new InvalidUsernameOrPasswordException("Bad username or password");
             }
         } else {
-            throw new Exception("username not found");
+            throw new InvalidUsernameOrPasswordException("Bad username or password");
         }
     }
 

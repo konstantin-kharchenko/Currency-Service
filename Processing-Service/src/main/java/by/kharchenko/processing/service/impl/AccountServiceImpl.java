@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,6 +49,7 @@ public class AccountServiceImpl implements AccountService {
     private final Cache<String, BigDecimal> currencyCache;
     private final List<String> mainCurrencies = new ArrayList<>(List.of("USD", "EUR", "GBP"));
     private final AccountMapper accountMapper;
+    private static final String REFERENCE_CURRENCY = "RUB";
 
     public AccountServiceImpl(AccountRepository accountRepository, UserRepository userRepository, HistoryRepository historyRepository, ApplicationEventPublisher eventPublisher, @Value("${currency-service.uri}") String currencyUrl,
                               AccountMapper accountMapper) {
@@ -133,9 +135,19 @@ public class AccountServiceImpl implements AccountService {
             Account fromAccount = accountRepository.findByAccountNumber(transferAccountDto.getFromAccount()).orElseThrow(() -> new AccountNumberNotExistsException("This account number not exists"));
             Account toAccount = accountRepository.findByAccountNumber(transferAccountDto.getToAccount()).orElseThrow(() -> new AccountNumberNotExistsException("This account number not exists"));
 
-            BigDecimal fromCurrency = currencyCache.getIfPresent(fromAccount.getCurrency());
+            BigDecimal fromCurrency;
+            BigDecimal toCurrency;
+            if (fromAccount.getCurrency().equals(REFERENCE_CURRENCY)){
+                fromCurrency = new BigDecimal(BigInteger.ONE);
+            }else {
+                fromCurrency = currencyCache.getIfPresent(fromAccount.getCurrency());
+            }
+            if (toAccount.getCurrency().equals(REFERENCE_CURRENCY)){
+                toCurrency = new BigDecimal(BigInteger.ONE);
+            }else {
+                toCurrency = currencyCache.getIfPresent(toAccount.getCurrency());
+            }
 
-            BigDecimal toCurrency = currencyCache.getIfPresent(toAccount.getCurrency());
             if (fromCurrency == null || toCurrency == null) {
                 updateMainCurrencies();
                 fromCurrency = currencyCache.getIfPresent(fromAccount.getCurrency());

@@ -1,0 +1,7 @@
+html, body, .main {
+    height: 100%;
+}
+body, .main{
+    display: flex;
+    flex-direction: column;
+}
