@@ -4,7 +4,7 @@ import {loginUser, registerUser} from "../services/authService";
 const AuthContext = createContext({});
 export const useAuth = () => useContext(AuthContext);
 
-const Auth = ({ children }) => {
+const Auth = ({children}) => {
 
     const [isAuth, setIsAuth] = useState(false);
     const [isAuthChecked, setIsAuthChecked] = useState(false);
@@ -13,8 +13,7 @@ const Auth = ({ children }) => {
         (async () => {
             if (localStorage.getItem('access-token')) {
                 setIsAuth(true)
-            }
-            else {
+            } else {
                 setIsAuth(false);
             }
             setIsAuthChecked(true);
@@ -27,11 +26,11 @@ const Auth = ({ children }) => {
         setIsAuth(true);
     };
 
-    const loginByOAuth = () =>{
+    const loginByOAuth = () => {
         setIsAuth(true);
     }
 
-    const register = async (data) =>{
+    const register = async (data) => {
         await registerUser(data);
     }
 
@@ -41,7 +40,7 @@ const Auth = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ isAuth,login, logout, loginByOAuth, register}}>
+        <AuthContext.Provider value={{isAuth, login, logout, loginByOAuth, register}}>
             {isAuthChecked && children}
         </AuthContext.Provider>
     );

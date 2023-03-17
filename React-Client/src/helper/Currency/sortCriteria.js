@@ -1,0 +1,1 @@
+export const sortCriteria = ["No sort", "Descending balance", "Ascending balance"]

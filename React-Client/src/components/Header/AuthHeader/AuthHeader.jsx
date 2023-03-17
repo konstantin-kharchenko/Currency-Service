@@ -3,7 +3,8 @@ import {useCurrency} from "../../../context/Currecny";
 import {Link} from "react-router-dom";
 import {useAuth} from "../../../auth/Auth";
 import NewAccountModel from "../../Models/NewAccountModel/NewAccountModel";
-import {CurrencyToFind, SortCriteria} from "../../../util/MainCurrencies";
+import {sortCriteria} from "../../../helper/Currency/sortCriteria";
+import {currencyToFind} from "../../../helper/Currency/currencyToFind";
 import HeaderCurrencies from "../../HeaderCurrencies/HeaderCurrencies";
 import "bootstrap/dist/js/bootstrap.min.js";
 import './AuthHeader.css'
@@ -22,7 +23,7 @@ const AuthHeader = ({
 
     const {logout} = useAuth();
 
-    const currencies = CurrencyToFind.map((element, index) =>
+    const currencies = currencyToFind.map((element, index) =>
         <li key={index.toString()}>
             <button className={currencyCriteria === element ? "dropdown-item text-light bg-dark" : "dropdown-item"}
                     onClick={() => {
@@ -34,7 +35,7 @@ const AuthHeader = ({
         </li>
     );
 
-    const sortCurrencies = SortCriteria.map((element, index) =>
+    const sortCurrencies = sortCriteria.map((element, index) =>
         <li key={index.toString()}>
             <button className={sortBy === element ? "dropdown-item text-light bg-dark" : "dropdown-item"} onClick={() => {
                 setSortBy(element)
@@ -56,8 +57,6 @@ const AuthHeader = ({
             <div className="container">
                 <div className="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
                     <HeaderCurrencies data={data}/>
-
-
                     <div className="dropdown-menu-lg-start text-end">
                         <button className="btn btn-warning dropdown-toggle"
                                 id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">

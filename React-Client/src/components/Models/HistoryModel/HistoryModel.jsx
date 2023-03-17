@@ -5,6 +5,7 @@ import CustomHistory from "../../CustomHistory/CustomHistory";
 import CustomPagination from "../../CustomPagination/CustomPagination";
 
 const HistoryModel = ({onHide, show, account, accountHistory, newPageInHistory, flag}) => {
+
     let historyList = null;
     if (show === true) {
         historyList = accountHistory.content.map((element, key) =>

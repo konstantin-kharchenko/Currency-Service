@@ -2,10 +2,10 @@ import React, {useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../auth/Auth";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import UnAuthHeader from "../../components/Header/UnAuthHeader";
+import UnAuthHeader from "../../components/Header/UnAuthHeader/UnAuthHeader";
 import CustomFooter from "../../components/Footer/CustomFooter";
 import CustomContent from "../../components/Content/CustomContent";
-import {authErrors} from "../../util/Errors";
+import {authErrors} from "../../helper/ErrorMessage/authErrorMessage";
 
 const Login = () => {
 

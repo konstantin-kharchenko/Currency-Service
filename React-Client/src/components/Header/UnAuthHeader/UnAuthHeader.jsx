@@ -1,8 +1,7 @@
 import React from 'react';
-import {useCurrency} from "../../context/Currecny";
+import {useCurrency} from "../../../context/Currecny";
 import {Link} from "react-router-dom";
-import HeaderCurrencies from "../HeaderCurrencies/HeaderCurrencies";
-import NewAccountModel from "../Models/NewAccountModel/NewAccountModel";
+import HeaderCurrencies from "../../HeaderCurrencies/HeaderCurrencies";
 
 const UnAuthHeader = () => {
     const {data} = useCurrency();

@@ -1,18 +1,13 @@
 import React from 'react';
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import {MainCurrencies} from "../../../util/MainCurrencies";
+import {mainCurrencies} from "../../../helper/Currency/mainCurrencies";
 
 const NewAccountModel = ({onHide, create, show}) => {
 
-    const currenciesToCreate = MainCurrencies.map((element, index) =>
+    const currenciesToCreate = mainCurrencies.map((element, index) =>
         <option key={index.toString()}>{element}</option>
     );
-
-    const beforeCreate = async () => {
-        const select = document.getElementById('select');
-        await create(select.value);
-    }
 
     return (
         <Modal
@@ -37,7 +32,10 @@ const NewAccountModel = ({onHide, create, show}) => {
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button className='btn btn-warning border-dark shadow-lg' onClick={beforeCreate}>Create</Button>
+                <Button className='btn btn-warning border-dark shadow-lg' onClick={async () => {
+                    const select = document.getElementById('select');
+                    await create(select.value);
+                }}>Create</Button>
             </Modal.Footer>
         </Modal>
     );

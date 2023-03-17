@@ -1,6 +1,8 @@
 import React from 'react';
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import {exchangeAmountValidation} from "../../../helper/Validation/exchangeAmountValidation";
+import {exchangeAccountNumberValidation} from "../../../helper/Validation/exchangeAccountNumberValidation";
 
 const ExchangeModel = ({
                            onHide,
@@ -12,36 +14,13 @@ const ExchangeModel = ({
                            setExchangeError
                        }) => {
 
-    const onHideAdd = () => {
-        setExchangeError('');
-        onHide();
-    }
-
-    const onInputCount = (event) => {
-        if (event.target.value.includes('-')) {
-            setExchangeError('cannot be negative. ')
-        } else {
-            setExchangeError('')
-        }
-        setExchangeCount(event.target.value)
-    }
-
-    const onInputAccountNumber = (event) => {
-        setExchangeAccountNumber(event.target.value)
-    }
-
-    const beforeExchange = () => {
-        const accountNumber = document.getElementById('accountNumber').value;
-        if (accountNumber === '') {
-            setExchangeError(exchangeError + 'You must enter account number');
-        }
-        exchange();
-    }
-
     return (
         <Modal
             className='bg-dark bg-opacity-75'
-            onHide={onHideAdd}
+            onHide={() => {
+                setExchangeError('');
+                onHide();
+            }}
             show={show}
             size="lg"
             aria-labelledby="contained-modal-title-vcenter"
@@ -54,15 +33,39 @@ const ExchangeModel = ({
             </Modal.Header>
             <Modal.Body>
                 <div className='h3'>Enter account number</div>
-                <input className='form-control shadow-lg' id='accountNumber' onInput={onInputAccountNumber}/>
+                <input className='form-control shadow-lg' id='accountNumber' onInput={(event) => {
+                    if (!exchangeAccountNumberValidation(event.target.value)) {
+                        setExchangeError('Account number can not be empty')
+                    } else {
+                        setExchangeError('')
+                    }
+                    setExchangeAccountNumber(event.target.value)
+                }} required={true}/>
                 <div className='h4'>Enter count, please</div>
-                <input className='form-control shadow-lg' type={"number"} min={0} onInput={onInputCount}/>
+                <input className='form-control shadow-lg' id='amount' type={"number"} min={0} onInput={(event) => {
+                    if (!exchangeAmountValidation(event.target.value) || event.target.value === '') {
+                        setExchangeError('Can not be negative')
+                    } else {
+                        setExchangeError('')
+                    }
+                    setExchangeCount(event.target.value)
+                }} required={true}/>
                 <div className='text-danger text-center h3'>
                     {exchangeError}
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button className='btn btn-warning border-dark shadow-lg' onClick={beforeExchange}>Exchange</Button>
+                <Button className='btn btn-warning border-dark shadow-lg' onClick={() => {
+                    const accountNumber = document.getElementById('accountNumber').value;
+                    const amount = document.getElementById('amount').value;
+                    if (!exchangeAccountNumberValidation(accountNumber)) {
+                        setExchangeError('Account number can not be empty');
+                    } else if (amount === '') {
+                        setExchangeError('Count can not be empty');
+                    } else {
+                        exchange();
+                    }
+                }}>Exchange</Button>
             </Modal.Footer>
         </Modal>
     );

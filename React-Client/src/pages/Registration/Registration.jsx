@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
-import UnAuthHeader from "../../components/Header/UnAuthHeader";
+import UnAuthHeader from "../../components/Header/UnAuthHeader/UnAuthHeader";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../auth/Auth";
 import CustomFooter from "../../components/Footer/CustomFooter";
 import CustomContent from "../../components/Content/CustomContent";
-import {authErrors, registerErrors} from "../../util/Errors";
+import {registerErrors} from "../../helper/ErrorMessage/registerErrorMessage";
 
 const Registration = () => {
     const [errorMessages, setErrorMessages] = useState('');

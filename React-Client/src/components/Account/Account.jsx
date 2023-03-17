@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
 import TopUpModel from "../Models/TopUpModel/TopUpModel";
 import ExchangeModel from "../Models/ExchangeModel/ExchangeModel";
-import {request} from "../../services/axiosService";
-import {accountErrors} from "../../util/Errors";
+import {accountErrors} from "../../helper/ErrorMessage/accountErrorMessage";
 import HistoryModel from "../Models/HistoryModel/HistoryModel";
-import europe from "../../images/Flag_of_Europe.png";
-import america from "../../images/Flag_of_America.png";
-import british from "../../images/Flag_of_British.png";
-import russia from "../../images/Flag_of_Russia.png"
+import {getFlag} from "../../helper/Flag/flag";
+import {exchangeAmount, setTopUp} from "../../services/accountService";
+import {getNewPageInHistory} from "../../services/accountHistoryService";
+import {deleteAccountByAccountNumber} from "../../services/accountService";
+import {exchangeDataValidation} from "../../helper/Validation/exchangeDataValidation";
 
 const Account = (props) => {
     const [topUpShow, setTopUpShow] = useState(false);
@@ -20,34 +20,21 @@ const Account = (props) => {
     const [exchangeError, setExchangeError] = useState('');
     const [historyShow, setHistoryShow] = useState(false);
     const [accountHistory, setAccountHistory] = useState();
+    const flag = getFlag(account.currency);
 
     const topUp = async () => {
-        if (topUpCount !== 0 && !topUpCount.includes('-')) {
-            const {data} = await request({
-                method: 'POST', url: '/processing/add-money'
-                , data: {
-                    accountNumber: account.accountNumber,
-                    moneyCount: topUpCount
-                }
-            });
+        const data = await setTopUp(account, topUpCount);
+        if (data !== undefined) {
             setAccount(data);
             setTopUpCount(0);
             setTopUpShow(false)
         }
-
     }
 
     const exchange = async () => {
-        if (exchangeCount !== 0 && !exchangeCount.includes('-') && exchangeAccountNumber !== '') {
+        if (exchangeDataValidation(exchangeCount,exchangeAccountNumber)) {
             try {
-                await request({
-                    method: 'POST', url: '/processing/transfer'
-                    , data: {
-                        fromAccount: account.accountNumber,
-                        toAccount: exchangeAccountNumber,
-                        count: exchangeCount
-                    }
-                });
+                await exchangeAmount(exchangeCount,account.accountNumber,exchangeAccountNumber);
                 setExchangeShow(false)
                 setExchangeCount(0);
                 setExchangeAccountNumber('');
@@ -57,51 +44,20 @@ const Account = (props) => {
                 const errMsg = accountErrors().get(body.id);
                 setExchangeError(errMsg);
             }
-
         }
-        setTopUpShow(false)
     }
 
     const deleteAccount = async () => {
-        await request({
-            method: 'POST', url: '/processing/delete'
-            , data: {
-                accountNumber: account.accountNumber,
-            }
-        });
+        await deleteAccountByAccountNumber(account.accountNumber);
         props.reload();
     };
 
-    let flag;
-    if (account.currency === 'USD') {
-        flag = america;
-    } else if (account.currency === 'EUR') {
-        flag = europe;
-    } else if (account.currency === 'GBP') {
-        flag = british;
-    }
-    else if (account.currency === 'RUB') {
-        flag = russia;
-    }
-    const history = async () => {
-        newPageInHistory(0);
-
-    }
-
     const newPageInHistory = async (page) => {
-        const {data} = await request({
-            method: 'GET',
-            url: '/history/find?page=' + page + '&size=3&sort=id,DESC&account-number=' + account.accountNumber
-        });
-
-        if (data !== undefined) {
-            for (let i = 0; i < data.content.length; i++) {
-                data.content[i].created = new Date(data.content[i].created);
-            }
-            setAccountHistory(data);
-        }
+        const data = await getNewPageInHistory(page, account.accountNumber);
+        setAccountHistory(data);
         setHistoryShow(true)
     };
+
     return (
         <div className="p-3 border rounded m-lg-5 text-dark bg-secondary bg-opacity-10 shadow-lg">
             <div className='d-flex justify-content-between'>
@@ -129,7 +85,9 @@ const Account = (props) => {
                     </div>
 
                 </button>
-                <button onClick={history} className="btn btn-outline-dark me-2  shadow-lg">
+                <button onClick={async () => {
+                    await newPageInHistory(0);
+                }} className="btn btn-outline-dark me-2  shadow-lg">
                     <div className='h6'>
                         History
                     </div>

@@ -4,24 +4,13 @@ import Modal from 'react-bootstrap/Modal';
 
 const TopUpModel = ({onHide, topUp, show, setTopUpCount, topUpError, setTopUpError}) => {
 
-    const onHideAdd = () => {
-        setTopUpError('');
-        onHide();
-    }
-
-    const onInput = (event) => {
-        if (event.target.value.includes('-')) {
-            setTopUpError('cannot be negative')
-        } else {
-            setTopUpError('')
-        }
-        setTopUpCount(event.target.value)
-    }
-
     return (
         <Modal
             className='bg-dark bg-opacity-75'
-            onHide={onHideAdd}
+            onHide={() => {
+                setTopUpError('');
+                onHide();
+            }}
             show={show}
             size="sm"
             aria-labelledby="contained-modal-title-vcenter"
@@ -35,7 +24,14 @@ const TopUpModel = ({onHide, topUp, show, setTopUpCount, topUpError, setTopUpErr
             <Modal.Body>
                 <div className='container text-center'>
                     <h4>Enter count, please</h4>
-                    <input className='form-control shadow-lg' type={"number"} min={0} onInput={onInput}/>
+                    <input className='form-control shadow-lg' type={"number"} min={0} onInput={(event) => {
+                        if (event.target.value.includes('-')) {
+                            setTopUpError('cannot be negative')
+                        } else {
+                            setTopUpError('')
+                        }
+                        setTopUpCount(event.target.value)
+                    }}/>
                 </div>
                 <div className='text-danger text-center'>
                     <h3>

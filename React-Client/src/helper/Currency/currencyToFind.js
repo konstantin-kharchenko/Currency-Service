@@ -1,0 +1,1 @@
+export const currencyToFind = ["All currencies", "USD", "EUR", "GBP", "RUB"]

@@ -4,7 +4,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import CustomFooter from "../../components/Footer/CustomFooter";
 import {request} from "../../services/axiosService";
 import AccountList from "../../components/AccountList/AccountList";
-import {CurrencyToFind, SortCriteria} from "../../util/MainCurrencies";
+import {sortCriteria} from "../../helper/Currency/sortCriteria";
+import {currencyToFind} from "../../helper/Currency/currencyToFind";
 import CustomContent from "../../components/Content/CustomContent";
 import CustomPagination from "../../components/CustomPagination/CustomPagination";
 
@@ -12,8 +13,8 @@ const ClientHome = () => {
     const [accounts, setAccounts] = useState({});
     const [isLoad, setIsLoad] = useState(false);
     const [createShow, setCreateShow] = useState(false);
-    const [currencyCriteria, setCurrencyCriteria] = useState(CurrencyToFind[0]);
-    const [sortBy, setSortBy] = useState(SortCriteria[0]);
+    const [currencyCriteria, setCurrencyCriteria] = useState(currencyToFind[0]);
+    const [sortBy, setSortBy] = useState(sortCriteria[0]);
 
     const create = async (currency) => {
         await request({method: 'POST', url: '/processing/create', data: {currency}});
@@ -65,13 +66,13 @@ const ClientHome = () => {
 
     const createParamsWithNewCurrency = (currency) => {
         let currencyParam = "";
-        if (currency !== CurrencyToFind[0]) {
+        if (currency !== currencyToFind[0]) {
             currencyParam = "&currency=" + currency;
         }
         let sortParam = "&sort=id,DESC";
-        if (sortBy === SortCriteria[1]) {
+        if (sortBy === sortCriteria[1]) {
             sortParam = "&sort=money_count,DESC";
-        } else if (sortBy === SortCriteria[2]) {
+        } else if (sortBy === sortCriteria[2]) {
             sortParam = "&sort=money_count";
         }
         return {currencyParam, sortParam};
@@ -79,13 +80,13 @@ const ClientHome = () => {
 
     const createParamsWithNewSort = (sort) => {
         let currencyParam = "";
-        if (currencyCriteria !== CurrencyToFind[0]) {
+        if (currencyCriteria !== currencyToFind[0]) {
             currencyParam = "&currency=" + currencyCriteria;
         }
         let sortParam = "&sort=id,DESC";
-        if (sort === SortCriteria[1]) {
+        if (sort === sortCriteria[1]) {
             sortParam = "&sort=money_count,DESC";
-        } else if (sort === SortCriteria[2]) {
+        } else if (sort === sortCriteria[2]) {
             sortParam = "&sort=money_count";
         }
         return {currencyParam, sortParam};
@@ -93,13 +94,13 @@ const ClientHome = () => {
 
     const createParams = () => {
         let currencyParam = "";
-        if (currencyCriteria !== CurrencyToFind[0]) {
+        if (currencyCriteria !== currencyToFind[0]) {
             currencyParam = "&currency=" + currencyCriteria;
         }
         let sortParam = "&sort=id,DESC";
-        if (sortBy === SortCriteria[1]) {
+        if (sortBy === sortCriteria[1]) {
             sortParam = "&sort=money_count,DESC";
-        } else if (sortBy === SortCriteria[2]) {
+        } else if (sortBy === sortCriteria[2]) {
             sortParam = "&sort=money_count";
         }
         return {currencyParam, sortParam};

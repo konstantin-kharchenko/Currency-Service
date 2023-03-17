@@ -2,8 +2,6 @@ import React from 'react';
 
 const CustomHistory = ({history, account}) => {
 
-
-
     return (
         <div className="list-group-item list-group-item-action flex-column align-items-start shadow-lg mt-3 rounded-2">
             <div className="d-flex w-100 justify-content-between">
