@@ -8,7 +8,6 @@ import UnauthorizedRoutes from "./util/UnauthorizedRoutes";
 import AuthorizedRoutes from "./util/AuthorizedRoutes";
 import ClientHome from "./pages/Client-Home/Client-Home";
 import Registration from "./pages/Registration/Registration";
-import "./App.model.css"
 function App() {
     return (
          <Auth>
