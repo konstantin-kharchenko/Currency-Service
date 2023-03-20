@@ -35,17 +35,15 @@ export const request = async ({
         if (error.response.status === 401) {
 
             const refreshOptions = {
-                headers :{},
+                headers: {},
                 method: "GET",
                 url: baseUrl + '/auth/refresh',
                 withCredentials: true
             }
 
             try {
-
-                console.log("refresh request options: " + refreshOptions.url)
                 const refreshResponse = await axiosInstance(refreshOptions);
-                if (refreshResponse.data.accessToken!==undefined) {
+                if (refreshResponse.data.accessToken !== undefined) {
                     localStorage.setItem('access-token', JSON.stringify({accessToken: refreshResponse.data.accessToken}));
                 }
                 headers['Access-Token'] = refreshResponse.data.accessToken;
@@ -58,9 +56,7 @@ export const request = async ({
                     withCredentials: true
                 }
 
-                const finalResponse = await axiosInstance(finalOptions);
-
-                return finalResponse;
+                return await axiosInstance(finalOptions);
             } catch (error) {
                 localStorage.clear();
                 document.location = "http://localhost:3000/login"
