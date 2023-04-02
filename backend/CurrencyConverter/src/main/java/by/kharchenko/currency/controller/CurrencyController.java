@@ -24,8 +24,7 @@ public class CurrencyController {
 
     @GetMapping("/rate/{code}")
     public BigDecimal currencyRate(@PathVariable("code") String code) {
-        BigDecimal currency = nbrbService.requestMyCurrencyCode(code);
-        return currency;
+        return nbrbService.requestMyCurrencyCode(code);
     }
 
     @Scheduled(cron = "0 * * * * *")
@@ -33,7 +32,7 @@ public class CurrencyController {
     public void sendMainCurrencies(){
         System.out.println("CALL sendMainCurrencies() in time: " + new Date());
         BigDecimal usd = nbrbService.requestMyCurrencyCode("USD");
-        BigDecimal eur = nbrbService.requestMyCurrencyCode("USD");
+        BigDecimal eur = nbrbService.requestMyCurrencyCode("EUR");
         BigDecimal gbp = nbrbService.requestMyCurrencyCode("GBP");
         simpMessagingTemplate.convertAndSend(
                 "/currency/main-currency/outgoing",
