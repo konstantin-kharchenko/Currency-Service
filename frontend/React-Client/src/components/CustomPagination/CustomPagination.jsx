@@ -3,7 +3,7 @@ import React from 'react';
 const CustomPagination = ({data, newPage, isLoad}) => {
     let paginationItems = null;
     if (isLoad) {
-        const min = data.number - 5 < 0 ? 0 : data.number - 5;
+        const min = data.number - 5 < 0 ? 0 : data.numbe - 5;
         const max = data.number + 5 > data.totalPages ? data.totalPages : data.number + 5;
         const numbers = Array.from(Array(max).keys()).slice(min);
         paginationItems = numbers.map((element, index) =>

@@ -21,7 +21,6 @@ function Currency({children}) {
             await axios.get('http://localhost:8080/currency/rate/GBP')
         ).data;
         setIsLoad(true);
-
         setData({eur, usd, gbp});
     };
 

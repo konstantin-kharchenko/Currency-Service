@@ -1,1 +1,1 @@
-export const currencyToFind = ["All currencies", "USD", "EUR", "GBP", "RUB"]
+export const currencyToFind = ["All currencies", "USD", "EUR", "GBP", "BYN"]

@@ -1,7 +1,7 @@
 import america from "../../images/Flag_of_America.png";
 import europe from "../../images/Flag_of_Europe.png";
 import british from "../../images/Flag_of_British.png";
-import russia from "../../images/Flag_of_Russia.png";
+import belarus from "../../images/Flag_of_Belarus.png";
 
 export const getFlag = (flag) =>{
 
@@ -12,7 +12,7 @@ export const getFlag = (flag) =>{
     } else if (flag === 'GBP') {
         return british;
     }
-    else if (flag === 'RUB') {
-        return russia;
+    else if (flag === 'BYN') {
+        return belarus;
     }
 }

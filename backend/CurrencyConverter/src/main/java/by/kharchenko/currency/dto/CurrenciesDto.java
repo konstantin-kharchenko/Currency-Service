@@ -3,10 +3,12 @@ package by.kharchenko.currency.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 public class CurrenciesDto {
-    private Double usd;
-    private Double eur;
-    private Double gbp;
+    private BigDecimal usd;
+    private BigDecimal eur;
+    private BigDecimal gbp;
 }

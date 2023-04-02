@@ -1,7 +1,10 @@
 package by.kharchenko.currency.client;
 
-import java.time.LocalDate;
+import by.kharchenko.currency.dto.CurrencyDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import java.util.List;
 
 public interface HttpCurrencyDateRateClient {
-    String requestByDate(LocalDate date);
+    List<CurrencyDto> requestByDate() throws JsonProcessingException;
 }

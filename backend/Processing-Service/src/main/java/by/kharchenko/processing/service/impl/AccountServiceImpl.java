@@ -49,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
     private final Cache<String, BigDecimal> currencyCache;
     private final List<String> mainCurrencies = new ArrayList<>(List.of("USD", "EUR", "GBP"));
     private final AccountMapper accountMapper;
-    private static final String REFERENCE_CURRENCY = "RUB";
+    private static final String REFERENCE_CURRENCY = "BYN";
 
     public AccountServiceImpl(AccountRepository accountRepository, UserRepository userRepository, HistoryRepository historyRepository, ApplicationEventPublisher eventPublisher, @Value("${currency-service.uri}") String currencyUrl,
                               AccountMapper accountMapper) {
