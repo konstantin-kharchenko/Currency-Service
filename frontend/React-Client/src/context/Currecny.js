@@ -25,6 +25,7 @@ function Currency({children}) {
     };
 
     let onMessageReceived = (msg) => {
+        console.log(msg.usd);
         setData(msg);
     }
 
@@ -35,7 +36,7 @@ function Currency({children}) {
     return (
         <CurrencyContext.Provider value={{data, setMainCurrencies}}>
             <SockJsClient
-                url='http://localhost:8085/currency/main-currencies'
+                url='http://localhost:8080/currency/main-currencies'
                 topics={['/currency/main-currency/outgoing']}
                 onConnect={()=>console.log("Connected!")}
                 onDisconnect={()=>console.log("Disconnected!")}
