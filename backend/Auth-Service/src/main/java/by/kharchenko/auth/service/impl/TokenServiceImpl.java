@@ -217,7 +217,7 @@ public class TokenServiceImpl implements TokenService {
                     "?client_id=" + oAuthAppInfo.faceBookClientId +
                     "&client_secret=" + oAuthAppInfo.faceBookClientSecret +
                     "&grant_type=authorization_code" +
-                    "&redirect_uri=http://localhost:9000/auth/from-facebook" +
+                    "&redirect_uri=http://localhost:8080/auth/from-facebook" +
                     "&code=" + params.get("code");
             HttpHeaders headers = new HttpHeaders();
             headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
